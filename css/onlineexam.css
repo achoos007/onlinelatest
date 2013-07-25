@@ -1,0 +1,111 @@
+
+
+body {
+
+	margin-left: 0px;
+
+	margin-top: 0px;
+
+	margin-right: 0px;
+
+	margin-bottom: 0px;
+
+	text-align: center;
+
+	font-size:12px;
+
+	font-family:Arial, Helvetica, sans-serif;
+	background-color:#205eaf;
+
+}
+
+/*
+ul{ padding:0; margin:0}
+
+li{float:left;  padding:10px; margin:0; list-style:none; color:#fff; font-weight:normal}
+
+ul a{color:#ffffff; text-decoration:none;}
+
+ul:hover{color:#333;}
+
+ul:visited{color:#fff;}
+*/
+
+a{color:#0e4081; text-decoration:none;}
+
+input{border:1px solid #ccc; width:250px;}
+
+select{border:1px solid #ccc; width:250px;}
+
+textarea{border:1px solid #ccc; width:250px;}
+
+.border-div{padding:20px; width:75%; margin:auto; margin-top:10px; border:1px #ccc dashed; margin-bottom:10px; border-radius:10px;}
+
+table{border-collapse:collapse}
+
+.bottom-table{border:#ccc solid 1px;}
+
+.bottom-table td{ padding:10px}
+
+.errormessage{font:Arial, Helvetica, sans-serif; size:12px; color:#F00;}
+
+.dashboard-box{
+width:30%;
+float:left;
+margin:2px;
+border:1px solid #E7E7E7;
+padding:5px;
+font-size:12px; 
+
+-webkit-border-radius: 10px;
+-moz-border-radius: 10px;
+border-radius: 10px;  
+}
+.dashboard-title{
+font-weight:bold;
+font-size:14px;
+-webkit-border-radius: 5px;
+-moz-border-radius: 5px;
+border-radius: 5px;
+border:1px solid #CCCCCC;   
+text-align:center;
+padding:3px;
+background-color:#E5E5E5;
+margin-bottom:5px;
+cursor:move;
+}
+
+.hr{
+border-bottom:1px dotted #888888;
+
+}
+.error{
+text-align:center;
+color:#FF0013;
+padding:3px;
+font-size:14px;
+
+}
+
+.drop-box{
+padding:1px; 
+background-color:#EBEBEB;  
+border:1px solid #A1A1A1;
+-webkit-border-radius: 10px;
+-moz-border-radius: 10px;
+border-radius: 10px;  
+}
+.data-box{
+-webkit-border-radius: 0px 0px 20px 20px;
+-moz-border-radius: 0px 0px 20px 20px;
+border-radius: 0px 0px 20px 20px;
+background-color:#FFFFFF;  
+-webkit-box-shadow: #000000 42px 42px 42px;
+-moz-box-shadow: #000000 42px 42px 42px;
+ box-shadow: #000000 42px 42px 42px;
+
+padding:15px;
+}
+#assign_sub_result{
+height:30px;
+}
