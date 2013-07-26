@@ -14,7 +14,7 @@
 | path to your installation.
 |
 */
-$config['base_url']	= 'http://localhost/online-latest/trunk/';
+$config['base_url']	= 'http://localhost/onlinelatest/trunk/';
 
 /*
 |--------------------------------------------------------------------------
