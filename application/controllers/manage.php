@@ -10,7 +10,11 @@ class Manage extends CI_Controller {
 // 
 	// }
 
-	
+	function __construct()
+	{
+		parent::__construct();
+		$this->load->helper(array('form', 'url'));
+	}
  
 	public function index()
 	{
@@ -113,7 +117,11 @@ $this->load->view("theme/index",$data);
 $this->load->view("theme/footer",$data);
 }
 function answerexam(){
-
+function __construct()
+	{
+		parent::__construct();
+		$this->load->helper(array('form', 'url'));
+	}
 	$userid = $this->session->userdata('userid');
 	$usertype = $this->session->userdata('usertype');
 	
@@ -162,12 +170,43 @@ print "Count".$count;
 	$update['data']['answer'] = lock(serialize($this->input->post('clkid')));
 	
 }
+
+	elseif($flag=='4'){function __construct()
+	{
+		parent::__construct();
+		$this->load->helper(array('form', 'url'));
+	}
+	//$update['data']['answer'] = lock(serialize($this->input->post('clkid')));
+		/*$config['upload_path'] = '/var/www/uploads/';
+		$config['allowed_types'] = 'gif|jpg|png';
+		$config['max_size']	= '100';
+		$config['max_width']  = '1024';
+		$config['max_height']  = '768';
+
+		$this->load->library('upload', $config);
+
+		if ( ! $this->upload->do_upload())
+		{
+			$error = array('error' => $this->upload->display_errors());
+
+			//$this->load->view('upload_form', $error);
+			print"Error";
+		}
+		else
+		{
+			$data = array('upload_data' => $this->upload->data());
+
+			$this->load->view('upload_success', $data);
+			print"Success page";
+		}*/
+	
+}
 	elseif($flag=='5'){
-	$update['data']['answer'] = lock(serialize($this->input->post('clkid')));
+	$update['data']['answer'] = $this->input->post('clkid');
 	
 }
 
-	if ($count > 0) {
+	/*if ($count > 0) {
 		$update['where']['qBankid'] = $qid;
 		$update['where']['qDesignerId']= $examid;
 		$update['where']['userid']= $userid;
@@ -184,7 +223,7 @@ print "Count".$count;
 		insert($update);
 			print "Data Inserted Successfully";
 	}
-	
+	*/
 }
 
 function answer_delete(){
@@ -265,6 +304,33 @@ function finish_exam(){
 			print"Error Occured";
 	
 }
+
+	function do_upload()
+	{
+		$config['upload_path'] = '/var/www/uploads/';
+		$config['allowed_types'] = 'doc|pdf';
+		$config['max_size']	= '1000';
+		$config['max_width']  = '1024';
+		$config['max_height']  = '768';
+
+		$this->load->library('upload', $config);
+
+		if ( ! $this->upload->do_upload())
+		{
+			$error = array('error' => $this->upload->display_errors());
+
+		//$this->load->view('fileupload_test', $error); 
+		print "Error while uploading. Please upload only .doc or .pdf extention files!!!";
+			
+		}
+		else
+		{
+			$data = array('upload_data' => $this->upload->data());
+
+		print"Successfully Added!!!!";
+			//$this->load->view('upload_success', $data);
+		}
+	}
 
 }
 

@@ -1,8 +1,5 @@
 <?php
-//$test=open('FFizZPjmyvG6SFVQgGUYLqKjE1/h1UCcJhKJO6wiEecOa8UPfD8kPV3k6cV216VmL67cxv9b0QDPT2z5YpkI9A==');
-//echo "Hello".$test;
-//$test1=unserialize($test);
-//print_r($test1)	;
+
 $aa=$question;
 $bb=$qid;
 $qno=$id;
@@ -15,6 +12,7 @@ $hint1=0;
 $hint2=0;
 $hint3=0;
 
+// For mock test checking 
 if($mocktype=='on')
 {
 	$que['table']='qBank';
@@ -26,6 +24,7 @@ else{
 	$que['where']['qBankid']=$qid;
 }
 
+// Getting hint values from table
 $que=getsingle($que);
 $hint1=empty($que['hint1'])? '0' : $que['hint1'];
 $hint2=empty($que['hint2'])? '0' : $que['hint2'];
@@ -41,39 +40,35 @@ print "<div style='width:600px;'>";
 $flag=0;
 if($questiontype=='multiple choice multiple answer')
 {
-print "<div><h3>".$qno.") ".ucfirst($que['question'])."</h3></div>";
-print "<div align='right' > <a href='#popupPadded' data-rel='popup' data-role='button' data-inline='true' data-mini='true'>Hint</a> 
-</div>";
+	print "<div><h3>".$qno.") ".ucfirst($que['question'])."</h3></div>";
+	print "<div align='right' > <a href='#popupPadded' data-rel='popup' data-role='button' data-inline='true' data-mini='true'>Hint</a> 
+	</div>";
 
- 
+	print '
 
-print '
+		<div style="width:500px;padding:15px;">
+	
+			<label><input type="checkbox" name="checkbox[]" class="'.$qid.'" value="a"/> '.$que['option1'].' </label>
 
-	<div style="width:500px;padding:15px;">
+			<label><input type="checkbox" name="checkbox[]" class="'.$qid.'" value="b"/> '.$que['option2'].' </label>
 
-		<label><input type="checkbox" name="checkbox[]" class="'.$qid.'" value="a"/> '.$que['option1'].' </label>
+			<label><input type="checkbox" name="checkbox[]" class="'.$qid.'" value="c"/> '.$que['option3'].' </label>
 
-		<label><input type="checkbox" name="checkbox[]" class="'.$qid.'" value="b"/> '.$que['option2'].' </label>
+			<label><input type="checkbox" name="checkbox[]" class="'.$qid.'" value="d"/> '.$que['option4'].' </label>
 
-		<label><input type="checkbox" name="checkbox[]" class="'.$qid.'" value="c"/> '.$que['option3'].' </label>
-
-		<label><input type="checkbox" name="checkbox[]" class="'.$qid.'" value="d"/> '.$que['option4'].' </label>
-
-	</div>
-
+		</div>
 
 ';
-$flag='1';
+	$flag='1';
 }
+
 else if($questiontype=='multiple choice single answer')
 {
-print "<div><h3>".$qno.") ".ucfirst($que['question'])."</h3></div>";
-print "<div align='right' > <a href='#popupPadded' data-rel='popup' data-role='button' data-inline='true' data-mini='true'>Hint</a> 
-</div>";
+	print "<div><h3>".$qno.") ".ucfirst($que['question'])."</h3></div>";
+	print "<div align='right' > <a href='#popupPadded' data-rel='popup' data-role='button' data-inline='true' data-mini='true'>Hint</a> 
+		</div>";
 
- 
-
-print '
+	print '
 
 	<div style="width:500px;padding:15px;">
 		<input type="radio" name="checkbox[]" id="radio-choice-1" value="a" class="'.$qid.'" />
@@ -88,8 +83,6 @@ print '
 		<input type="radio" name="checkbox[]" id="radio-choice-4" value="d" class="'.$qid.'"	 />
 		<label for="radio-choice-4">'.$que['option4'].'</label>
 	</div>
-
-
 ';
 $flag='2';
 }
@@ -98,8 +91,8 @@ else if($questiontype=='yes / no')
 {
 	print "<div><h3>".$qno.") ".ucfirst($que['question'])."</h3></div>";
 	print "<div align='right' > <a href='#popupPadded' data-rel='popup' data-role='button' data-inline='true' data-mini='true'>Hint</a> 
-		</div>";
-		print' <div style="width:500px;padding:15px;">
+	</div>";
+	print' <div style="width:500px;padding:15px;">
 	<input type="radio" name="checkbox[]" id="radio-yesno-1" value="a" class="'.$qid.'" />
   <label for="radio-yesno-1">'.$que['option1'].'</label>
      	
@@ -107,27 +100,48 @@ else if($questiontype=='yes / no')
   <label for="radio-yesno-2">'.$que['option2'].'</label>
 	</div>	
 		';
-$flag='3';
-}
+	$flag='3';
+	}
+	
 else if($questiontype=='file upload')
 {
-		print"File upload Quest";
-$flag='4';
+		
+
+		print "<div><h3>".$qno.") ".ucfirst($que['question'])."</h3></div>";
+		print"
+		 
+			<form action='".site_url('manage/do_upload/')."' method='post' enctype='multipart/form-data' data-ajax='false'>
+				<input type='file' name='userfile' size='20' />
+
+					<br /><br />
+
+				<input type='submit' value='upload' />
+
+			</form>
+
+			<div class='progress' style='position:relative; width:400px; border: 1px solid #ddd; padding: 1px; border-radius: 3px;'>
+        <div class='bar' style='background-color: #B4F5B4; width:0%; height:20px; border-radius: 3px;'></div >
+        <div class='percent' style='position:absolute; display:inline-block; top:3px; left:48%;'>0%</div >
+			</div>
+			<div id='status'></div>	
+	";
+	print"<p style='color:red'>Note:- Make sure that you are uploading .doc or .pdf extension files. All other file format may not supported!!!</p>";
+	$flag='4';
 }
 else if($questiontype=='short text')
 {
-		print "<div><h3>".$qno.") ".ucfirst($que['question'])."</h3></div>";
+	print "<div><h3>".$qno.") ".ucfirst($que['question'])."</h3></div>";
 		
-		print '
+	print '
 
-<div style="width:500px;padding:15px;">
+		<div style="width:500px;padding:15px;">
 
 	
-   <textarea cols="40" rows="8" name="checkbox[]" id="textarea-short" class="'.$qid.'"></textarea>
+		<textarea cols="40" rows="8" name="checkbox[]" id="textarea-short" class="'.$qid.'_short"></textarea>
 
-</div>
+		</div>
   ';
-$flag='5';
+	$flag='5';
 }
 print "</div>";
 
@@ -233,6 +247,17 @@ $.each($('input[name=\"checkbox[]\"]:checked'), function() {
 	
 });
 
+$('.".$qid."_short').change(function(){
+	//alert('Hai');
+	txt_val = $(this).val();
+	//alert(test);
+	$.post('".site_url('manage/answerexam/')."',{clkid:txt_val,qid:$qid,flag:$flag,examid:$qDesignerId},function(data){
+		alert(data);
+	});
+});
+
+
+
 $( '#aboutPage' ).on( 'pageinit',function(event){
   alert( 'This page was just enhanced by jQuery Mobile!' );
 });
@@ -244,6 +269,41 @@ $( '#aboutPage' ).on( 'pageinit',function(event){
 	//	});
 	
 	//});
+	
+	
+	
+
+    
+var bar = $('.bar');
+var percent = $('.percent');
+var status = $('#status');
+   
+$('form').ajaxForm({
+    beforeSend: function() {
+        status.empty();
+        var percentVal = '0%';
+        bar.width(percentVal)
+        percent.html(percentVal);
+    },
+    uploadProgress: function(event, position, total, percentComplete) {
+        var percentVal = percentComplete + '%';
+        bar.width(percentVal)
+        percent.html(percentVal);
+    },
+    success: function() {
+        var percentVal = '100%';
+        bar.width(percentVal)
+        percent.html(percentVal);
+    },
+	complete: function(xhr) {
+		status.html(xhr.responseText);
+	}
+}); 
+
+      
+
+	
+	
 
 ";
 print ready($script);
