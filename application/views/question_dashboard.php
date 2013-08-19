@@ -12,6 +12,12 @@ $hint1=0;
 $hint2=0;
 $hint3=0;
 
+
+//$duration = gmdate('H:i:s',$duration);
+//print"Total Duration".$duration;
+$date=date("H:i:s");
+
+
 // For mock test checking 
 if($mocktype=='on')
 {
@@ -33,13 +39,25 @@ $hint3=empty($que['hint3'])? '0' : $que['hint3'];
 $questiontype=empty($que['questiontype'])? '0' : $que['questiontype'];
 $qDesignerId=$examid;
 
-print "<div id='display-time'></div>";
+print "";
+print"<div class='ui-grid-b'>
+    <div class='ui-block-a' ><div class='ui-bar ui-bar-d' style='height:50px'><div style='float:left'><a href=''data-role='button' data-icon='gear' data-iconpos='notext' data-theme='e' data-inline='true'>alert</a></div><div style='float:left; padding-left:25px; padding-top:10px;'>".$date."</div></div></div>
+     <div class='ui-block-b'><div class='ui-bar ui-bar-d' style='height:50px'><a href=''data-role='button' data-icon='grid' data-iconpos='notext' data-theme='e' data-inline='true'>alert</a>Block B</div></div>
+    <div class='ui-block-c'><div class='ui-bar ui-bar-d' style='height:50px'><div style='float:left'><a href=''data-role='button' data-icon='alert' data-iconpos='notext' data-theme='e' data-inline='true'>alert</a></div><div style='float:left; padding-left:25px; padding-top:10px;' class='countdown'></div></div></div>
+
+</div>";
+print"<div  >
+</div>";
 print "<div style='width:600px;'>";
+	
 
 
 $flag=0;
 if($questiontype=='multiple choice multiple answer')
 {
+	
+	
+
 	print "<div><h3>".$qno.") ".ucfirst($que['question'])."</h3></div>";
 	print "<div align='right' > <a href='#popupPadded' data-rel='popup' data-role='button' data-inline='true' data-mini='true'>Hint</a> 
 	</div>";
@@ -64,6 +82,8 @@ if($questiontype=='multiple choice multiple answer')
 
 else if($questiontype=='multiple choice single answer')
 {
+
+		//print"<div class='countdown'> </div>";
 	print "<div><h3>".$qno.") ".ucfirst($que['question'])."</h3></div>";
 	print "<div align='right' > <a href='#popupPadded' data-rel='popup' data-role='button' data-inline='true' data-mini='true'>Hint</a> 
 		</div>";
@@ -125,6 +145,7 @@ else if($questiontype=='file upload')
 			</div>
 			<div id='status'></div>	
 	";
+	
 	print"<p style='color:red'>Note:- Make sure that you are uploading .doc or .pdf extension files. All other file format may not supported!!!</p>";
 	$flag='4';
 }
@@ -148,7 +169,8 @@ print "</div>";
 ?>
 
 <div data-role="footer" data-theme='b'>		
-	<div data-role="navbar">
+
+	<div data-role="navbar" >
 		<ul>
 			<?php
 			if($qno > $qucount1){
@@ -157,10 +179,10 @@ print "<li style='min-height:120px;margin-left:350px; font-size:16px;'><p>&nbsp;
 			else{
 			?>
 			
-			<li>
+			<li data-iconpos="left">
 
 				
-				<a href="<?php print site_url('manage/exam/'.$examid.'/'.$mocktype).'#'.('question-'.$p);?>" data-ajax="false" id="aboutPage">Previous</a>
+				<a data-icon="arrow-l" data-iconpos="left" href="<?php print site_url('manage/exam/'.$examid.'/'.$mocktype.'/'.$date).'#'.('question-'.$p);?>" data-ajax="false" id="aboutPage">Previous</a>
 				
 
 				
@@ -169,7 +191,7 @@ print "<li style='min-height:120px;margin-left:350px; font-size:16px;'><p>&nbsp;
 			<li>
 				<?php if($q > $qucount1){?>
 
-				<a href="<?php print site_url('manage/message_dialog/'.$examid) ?>"  data-rel='dialog'  data-transition='pop'>
+				<a data-icon="check" href="<?php print site_url('manage/message_dialog/'.$examid) ?>"  data-rel='dialog'  data-transition='pop'>
 	Finish
 </a>
 				
@@ -178,7 +200,7 @@ print "<li style='min-height:120px;margin-left:350px; font-size:16px;'><p>&nbsp;
 			else{
 			
 				?>
-				<a class="timer" href="<?php print site_url('manage/exam/'.$examid.'/'.$mocktype).'#'.('question-'.$q);?>" data-ajax="false">Next</a>
+				<a data-icon="arrow-r" data-iconpos="right" href="<?php print site_url('manage/exam/'.$examid.'/'.$mocktype.'/'.$date).'#'.('question-'.$q);?>" data-ajax='false'  >Next</a>
 				<?php }?>
 				</li> 
 			<?php
@@ -201,7 +223,7 @@ print "<li style='min-height:120px;margin-left:350px; font-size:16px;'><p>&nbsp;
 		</div>
 
 <!--<div data-role="popup" id="popupPadded" class="ui-content">
-	<p><?php echo $hint ?></p>
+	<p><?php //echo $hint ?></p>
 </div>-->
 <?php 
 print'
@@ -261,18 +283,9 @@ $('.".$qid."_short').change(function(){
 $( '#aboutPage' ).on( 'pageinit',function(event){
   alert( 'This page was just enhanced by jQuery Mobile!' );
 });
+			
 
-//$('.timer').click(function(){
-	//alert('hello');
-	//$.post('".site_url('manage/timer/')."',function(data){
-		//$('#display-time').html(data);
-	//	});
-	
-	//});
-	
-	
-	
-
+// for submitting the file upload using ajax form
     
 var bar = $('.bar');
 var percent = $('.percent');
@@ -300,10 +313,77 @@ $('form').ajaxForm({
 	}
 }); 
 
-      
+
 
 	
 	
+	///  for new count dowmn timer
+	
+	
+	
+		
+TotalSeconds = ".$duration.";
+
+UpdateTimer();
+
+setTimeout(function() { 
+
+	Tick();
+	
+}, 1000);
+		
+
+function Tick(){
+	if (TotalSeconds <= 0) {
+		//alert('You have only 0 more seconds!!!')
+		return;
+	}
+
+	TotalSeconds -= 1;
+	
+	UpdateTimer();
+	
+	setTimeout(function() { 
+		
+		Tick();
+		
+	}, 1000);
+}
+
+
+
+
+function UpdateTimer() {
+var Seconds = TotalSeconds;
+
+var Days = Math.floor(Seconds / 86400);
+Seconds -= Days * 86400;
+
+var Hours = Math.floor(Seconds / 3600);
+Seconds -= Hours * (3600);
+
+var Minutes = Math.floor(Seconds / 60);
+Seconds -= Minutes * (60);
+
+
+var TimeStr = ((Days > 0) ? Days + ' days ' : '') + LeadingZero(Hours) + ':' + LeadingZero(Minutes) + ':' + LeadingZero(Seconds)
+
+
+ $('.countdown').html(TimeStr);
+}
+
+
+function LeadingZero(Time) {
+
+return (Time < 10) ? '0' + Time : + Time;
+
+}
+
+
+
+
+
+
 
 ";
 print ready($script);

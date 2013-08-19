@@ -74,6 +74,10 @@ $count = count($list['result']);
           </td>
           
           <td width="100px">
+            <a href="<?php echo site_url('manage/validate/'); ?>" data-role="button" data-theme="b" data-mini="true" data-inline="true">Validate Exam</a>                   
+          </td>
+          
+          <td width="100px">
             <a href="<?php echo site_url('exam/form/' . $o['qDesignerId']); ?>" data-role="button" data-theme="b" data-mini="true" data-inline="true">Edit</a>                   
           </td>
           

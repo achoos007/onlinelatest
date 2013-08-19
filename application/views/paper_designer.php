@@ -136,7 +136,7 @@ if (!empty($subjectid) && ($subjectid > 0)) {
 							<fieldset data-role="controlgroup">
 								<label>Subject</label>
 								<select name="subjectid" id="subjectid" data-mini="true">
-									<option value="">Select</option>
+									<option value="0">Select</option>
                                       <?php
 									$query = $this->db->query("SELECT n_subjectid,c_subject FROM tbl_subject where c_subject!=''");
 									if ($query->num_rows() > 0) {
