@@ -53,12 +53,38 @@ class Manage extends CI_Controller {
 // ---------------------------------------------------------------------
 $this->menu="result";
 $this->title="question";
-			
+
+ 
+ //get user Type
+ 
+	
+	$get_type = "SELECT ea.userid,ea.typeid,ea.qDesignerId,emp.first_name FROM examanswer as ea, tbl_staffs as emp WHERE typeid = 1 and ea.userid = emp.staff_id group by emp.first_name ";
+	
+	$data['rslt'] = $this->login_db->get_results($get_type);
+		
+	$get_type = "SELECT ea.userid,ea.typeid,ea.qDesignerId,cand.first_name FROM examanswer as ea, candidate as cand WHERE typeid = 2 and ea.userid = cand.candidate_id group by cand.first_name ";
+		
+	$data['rslt_cand'] = $this->login_db->get_results($get_type);
+		
+
+
+ 
+
+ 
+		
+
+		
 // ---------------------------------------------------------------------
 $data['main']['validate']['title']=	"Validate Exam";
 $data['main']['validate']['page']  =	$this->load->view("exam_validate",$data,TRUE); 
 
 // ---------------------------------------------------------------------
+
+
+
+
+
+
 
 
 $this->load->view("theme/header",$data);
@@ -69,12 +95,20 @@ $this->load->view("theme/footer",$data);
 
 	}
 	
-function exam($examid=0,$mocktype="off") {
+function exam($examid=0,$mocktype="off",$date=0) {
 $data['examid']=intval($examid);
 $data['mocktype']=$mocktype;
 // ---------------------------------------------------------------------
 $this->menu="result";
 $this->title="question";
+
+// for getting time duration 
+
+$get_duration['table'] = 'qdesigner';
+$get_duration['where']['qDesignerId'] = $examid;
+$get_duration = getsingle($get_duration);
+$data['duration']=$get_duration['duration'];
+
 // ---------------------------------------------------------------------
 $exist['table']='qexam';
 $exist['where']['qDesignerId']=$examid;
@@ -91,7 +125,7 @@ $i++;
 $data['question']=$d;
 $data['qid']=$d;
 $data['id']=$i;
-$data['date']=date("H:i:s");
+$data['date']=$date;
 
 
 
@@ -307,7 +341,7 @@ function finish_exam(){
 
 	function do_upload()
 	{
-		$config['upload_path'] = '/var/www/uploads/';
+		$config['upload_path'] = 'uploads/answers';
 		$config['allowed_types'] = 'doc|pdf';
 		$config['max_size']	= '1000';
 		$config['max_width']  = '1024';
@@ -327,7 +361,9 @@ function finish_exam(){
 		{
 			$data = array('upload_data' => $this->upload->data());
 
-		print"Successfully Added!!!!";
+		print"Successfully uploaded!!!!";
+		
+		
 			//$this->load->view('upload_success', $data);
 		}
 	}

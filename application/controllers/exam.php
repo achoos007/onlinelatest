@@ -999,7 +999,7 @@ function sub_selection(){
 					 $test0  = $row->abc;
 				 }
 			
-			/*$qs = $this->db->query("SELECT COUNT(*) as abc FROM `qBank` WHERE `questiontype`='".$e."' and `level`='easy' and find_in_set('".$subjid."',`n_subjectid`);");
+			$qs = $this->db->query("SELECT COUNT(*) as abc FROM `qBank` WHERE `questiontype`='".$e."' and `level`='easy' and find_in_set('".$subjid."',`n_subjectid`);");
 			
 			 foreach ($qs->result() as $row)
 			   {
@@ -1022,9 +1022,9 @@ function sub_selection(){
 			 foreach ($qma->result() as $row)
 			   {
 					 $test3  = $row->abc;
-				 }*/
+				 }
 				 
-				 rowcount($e,$subjid,$typename);
+				 //rowcount($e,$subjid,$typename);
 			
 
       
