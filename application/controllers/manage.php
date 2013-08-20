@@ -54,26 +54,7 @@ class Manage extends CI_Controller {
 $this->menu="result";
 $this->title="question";
 
- 
- //get user Type
- 
 	
-	$get_type = "SELECT ea.userid,ea.typeid,ea.qDesignerId,emp.first_name FROM examanswer as ea, tbl_staffs as emp WHERE typeid = 1 and ea.userid = emp.staff_id group by emp.first_name ";
-	
-	$data['rslt'] = $this->login_db->get_results($get_type);
-		
-	$get_type = "SELECT ea.userid,ea.typeid,ea.qDesignerId,cand.first_name FROM examanswer as ea, candidate as cand WHERE typeid = 2 and ea.userid = cand.candidate_id group by cand.first_name ";
-		
-	$data['rslt_cand'] = $this->login_db->get_results($get_type);
-		
-
-
- 
-
- 
-		
-
-		
 // ---------------------------------------------------------------------
 $data['main']['validate']['title']=	"Validate Exam";
 $data['main']['validate']['page']  =	$this->load->view("exam_validate",$data,TRUE); 
@@ -158,6 +139,7 @@ function __construct()
 	}
 	$userid = $this->session->userdata('userid');
 	$usertype = $this->session->userdata('usertype');
+	$roleid = $this->session->userdata('roleid');
 	
 	$qid=intval($this->input->post('qid'));
 	//$data['qid'] = intval($this->input->post('qid',TRUE));
@@ -174,12 +156,13 @@ function __construct()
 
 print $userid;
 print "Count".$count;
+print"RoleId".$roleid;
 
 	$update['table'] = 'examanswer';
 	$update['data']['qBankid'] = $qid;
 	$update['data']['qDesignerId'] = $examid;
 	$update['data']['userid'] = $userid;
-	$update['data']['usertype'] = $usertype;
+	$update['data']['typeid'] = $roleid;
 	$update['data']['entrydate'] = entrydate();
 	
  
@@ -240,7 +223,7 @@ print "Count".$count;
 	
 }
 
-	/*if ($count > 0) {
+	if ($count > 0) {
 		$update['where']['qBankid'] = $qid;
 		$update['where']['qDesignerId']= $examid;
 		$update['where']['userid']= $userid;
@@ -257,7 +240,7 @@ print "Count".$count;
 		insert($update);
 			print "Data Inserted Successfully";
 	}
-	*/
+	
 }
 
 function answer_delete(){

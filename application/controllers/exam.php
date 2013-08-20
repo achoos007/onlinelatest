@@ -19,13 +19,25 @@ $this->load->view("theme/footer", $data);
 function designer() {
 $roleid=$this->session->userdata('roleid');
 $this->title = "Designer";
-if($roleid==1){
+if($roleid==0){
 $data['main']['open_question_list']['right']['text'] = "Create Question Papers";
 $data['main']['open_question_list']['right']['url'] = site_url("exam/form");
 }
 
+
+$get_type = "SELECT ea.userid,ea.typeid,ea.qDesignerId,emp.first_name FROM examanswer as ea, tbl_staffs as emp WHERE typeid = 1 and ea.userid = emp.staff_id group by emp.first_name ";
+	
+	$data['rslt'] = $this->login_db->get_results($get_type);
+		
+	$get_type = "SELECT ea.userid,ea.typeid,ea.qDesignerId,cand.first_name FROM examanswer as ea, candidate as cand WHERE typeid = 2 and ea.userid = cand.candidate_id group by cand.first_name ";
+		
+	$data['rslt_cand'] = $this->login_db->get_results($get_type);
+
 $data['main']['open_question_list']['title'] = "Previous Question Papers";	
 $data['main']['open_question_list']['page'] = $this->load->view("paper_designer_list", $data, TRUE);	
+
+
+
 
 $this->load->view("theme/header", $data);
 $this->load->view("theme/index", $data);
@@ -441,11 +453,12 @@ function assigneelist($uid=0,$qid=0,$assignid=0){
         if($uid==1){
 					$user_det['table']='tbl_staffs';
 					$user_det['where']['staff_id']=$userid;
+					$type = 1;
 				}
 				else{
 					$user_det['table']='candidate';
 					$user_det['where']['candidate_id']=$userid;
-					
+					$type = 2;
 				}
 				
 					$user_det=  getsingle($user_det);
@@ -471,6 +484,7 @@ function assigneelist($uid=0,$qid=0,$assignid=0){
                 $update['where']['user_id']=$userid;
                 $update['where']['qid']=$qid;
                 $update['data']['assign_status']='Inactive';
+                $update['data']['type']=$type;
                 $update['data']['entrydate']=$entrydate;
                 $result = update($update);
                 //print "<b>".$username ."</b>&nbsp; has been removed from <b>".$title."</b> exam";
@@ -487,6 +501,7 @@ function assigneelist($uid=0,$qid=0,$assignid=0){
                 $update['where']['user_id']=$userid;
                 $update['where']['qid']=$qid;
                 $update['data']['assign_status']='Active';
+                $update['data']['type']=$type;
                 $update['data']['entrydate']=$entrydate;
                 $result = update($update);
                 //print "<b>".$username."</b>&nbsp; has been sucessfully added to <b>".$title."</b> exam";
@@ -505,6 +520,7 @@ function assigneelist($uid=0,$qid=0,$assignid=0){
             $update['data']['user_id']=$userid;
             $update['data']['qid']=$qid;
             $update['data']['assign_status']='Active';
+            $update['data']['type']=$type;
             $update['data']['entrydate']=$entrydate;
             $result = insert($update);
             //print "<b>".$username."</b>&nbsp; has been sucessfully added to <b>".$title."</b> exam";
