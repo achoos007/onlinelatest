@@ -1,4 +1,8 @@
 <?php
+// getting session value for role id
+
+
+$roleid = $this->session->userdata('roleid');
 
 $aa=$question;
 $bb=$qid;
@@ -35,6 +39,8 @@ $que=getsingle($que);
 $hint1=empty($que['hint1'])? '0' : $que['hint1'];
 $hint2=empty($que['hint2'])? '0' : $que['hint2'];
 $hint3=empty($que['hint3'])? '0' : $que['hint3'];
+$correct_answer = empty($que['answer'])? '0' : $que['answer'];
+
 
 $questiontype=empty($que['questiontype'])? '0' : $que['questiontype'];
 $qDesignerId=$examid;
@@ -66,7 +72,7 @@ if($questiontype=='multiple choice multiple answer')
 
 		<div style="width:500px;padding:15px;">
 	
-			<label><input type="checkbox" name="checkbox[]" class="'.$qid.'" value="a"/> '.$que['option1'].' </label>
+			<label><input type="checkbox" name="checkbox[]" class="'.$qid.'" value="a"/> '.$que['option1'].' </label> 
 
 			<label><input type="checkbox" name="checkbox[]" class="'.$qid.'" value="b"/> '.$que['option2'].' </label>
 
@@ -77,6 +83,9 @@ if($questiontype=='multiple choice multiple answer')
 		</div>
 
 ';
+if($roleid == 0){
+print "<div>Correct Answer is ".$correct_answer."</div>";
+}
 	$flag='1';
 }
 
@@ -104,6 +113,9 @@ else if($questiontype=='multiple choice single answer')
 		<label for="radio-choice-4">'.$que['option4'].'</label>
 	</div>
 ';
+if($roleid == 0){
+print "<div>Correct Answer is ".$correct_answer."</div>";
+}
 $flag='2';
 }
 
@@ -120,6 +132,9 @@ else if($questiontype=='yes / no')
   <label for="radio-yesno-2">'.$que['option2'].'</label>
 	</div>	
 		';
+		if($roleid == 0){
+print "<div>Correct Answer is ".$correct_answer."</div>";
+}
 	$flag='3';
 	}
 	
@@ -166,6 +181,7 @@ else if($questiontype=='short text')
 }
 print "</div>";
 
+
 ?>
 
 <div data-role="footer" data-theme='b'>		
@@ -207,6 +223,8 @@ print "<li style='min-height:120px;margin-left:350px; font-size:16px;'><p>&nbsp;
 		}
 			?>
 		</ul>
+		
+		
 	</div><!-- /navbar -->
 </div><!-- /footer -->
 

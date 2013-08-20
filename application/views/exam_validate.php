@@ -14,6 +14,7 @@
 				$getexamname = getsingle($getexamname);
 				
 				$examname = $getexamname['title'];
+				
 	?>
 		 <table width="100%">
         <tr>

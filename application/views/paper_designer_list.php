@@ -3,7 +3,10 @@
 $roleid = $this->session->userdata('roleid');
 $userid = $this->session->userdata('userid');
 
-if($roleid==1){
+
+
+
+if($roleid==0){
 	$list['table'] = 'qdesigner';
 	$list['order']['title'] = 'desc';
 }
@@ -58,31 +61,33 @@ $count = count($list['result']);
           <td width="100px">  
 						<?php
 							if ($o['status'] == 1) {
-								if($roleid == 1){
+								if($roleid == 0){
 						?>
           
-									<a href="#popupMenu1<?php print $o['qDesignerId']?>" data-rel="popup" data-role="button" data-theme="b" data-mini="true" data-inline="true" class="assign" id="<?php print $o['qDesignerId'];?>" >Assign</a>            
+									<a href="#popupMenu1<?php print $o['qDesignerId']?>" data-rel="popup" data-role="button"   data-theme="b" data-mini="true" data-inline="true" data-icon="check" class="assign" id="<?php print $o['qDesignerId'];?>" >Assign</a>            
 
           </td>
           
           <td width="100px">
-            <a href="<?php echo site_url('exam/execute/' . $o['qDesignerId']); ?>" data-role="button" data-theme="b" data-mini="true" data-inline="true">Execute</a>                   
+            <a href="<?php echo site_url('exam/execute/' . $o['qDesignerId']); ?>" data-role="button" data-theme="b" data-mini="true" data-inline="true" data-icon="gear">Execute</a>                   
           </td>
           
           <td width="100px">
-            <a href="<?php echo site_url('manage/exam/' . $o['qDesignerId'].'/'.$a); ?>" data-role="button" data-theme="b" data-mini="true" data-inline="true">Manage</a>                   
+            <a href="<?php echo site_url('manage/exam/' . $o['qDesignerId'].'/'.$a); ?>" data-role="button" data-theme="b" data-mini="true" data-inline="true" data-icon="gear">Manage</a>                   
           </td>
           
           <td width="100px">
-            <a href="<?php echo site_url('manage/validate/'); ?>" data-role="button" data-theme="b" data-mini="true" data-inline="true">Validate Exam</a>                   
+            <!--<a href="<?php //echo site_url('manage/validate/'); ?>" data-role="button" data-theme="b" data-mini="true" data-inline="true">Validate Exam</a>  -->   
+            
+            <a href="#validateExam" data-rel="popup" data-role="button" data-inline="true" data-icon="grid" data-theme="b" data-mini="true" data-transition="pop" data-inline="true">Validate Exam</a>              
           </td>
           
           <td width="100px">
-            <a href="<?php echo site_url('exam/form/' . $o['qDesignerId']); ?>" data-role="button" data-theme="b" data-mini="true" data-inline="true">Edit</a>                   
+            <a href="<?php echo site_url('exam/form/' . $o['qDesignerId']); ?>" data-role="button" data-theme="b" data-mini="true" data-inline="true" data-icon="grid">Edit</a>                   
           </td>
           
           <td width="100px">
-            <a id ="<?php print $o['qDesignerId']; ?>" class="exam-delete" href="#" data-role="button" data-theme="b" data-mini="true" data-inline="true">Delete</a>                   
+            <a id ="<?php print $o['qDesignerId']; ?>" class="exam-delete" href="#" data-role="button" data-theme="b" data-mini="true" data-inline="true" data-icon="delete">Delete</a>                   
           </td>
           
           <?php 
@@ -109,6 +114,68 @@ $count = count($list['result']);
 			<li><a href="<?php print site_url('exam/assigneelist/2/' . $o['qDesignerId']);?>" data-mini='true'>Candidates</a></li> 
 		</ul>
 	</div>
+	
+	
+	
+	<!-- pop up menu for validate exam -->
+	
+	<div data-role="popup" id="validateExam" data-theme="none">
+    <div data-role="collapsible-set" data-theme="b" data-content-theme="c" data-collapsed-icon="arrow-r" data-expanded-icon="arrow-d" style="margin:0; width:250px;">
+        <div data-role="collapsible" data-inset="false">
+            <h2>Employees</h2>
+            <ul data-role="listview">
+							<?php
+								if($rslt >0){
+			foreach ($rslt as $row){
+				$emp_name = $row->first_name;
+				$qdesignerid = $row->qDesignerId;
+				
+				$getexamname['table'] = 'qdesigner';
+				
+							
+							?>
+                <li><a href="<?php echo site_url('manage/exam/' . $o['qDesignerId'].'/'.$a); ?>" ><?php echo $emp_name; ?></a></li>
+                
+                
+           <?php
+				 }
+			 }
+			 else{
+				 ?>
+				 <li><b>No employees are available!!!</b></li>
+			 <?php }
+           ?>     
+                
+            </ul>
+        </div><!-- /collapsible -->
+        <div data-role="collapsible" data-inset="false">
+            <h2>Candidates</h2>
+            <ul data-role="listview">
+							
+							<?php 
+		if($rslt_cand >0){
+			foreach ($rslt_cand as $cand){
+				$cand_name = $cand->first_name;
+	?>
+
+                <li><a href="#" data-rel="dialog"><?php print $cand_name; ?></a></li>	
+		
+		<?php
+			}
+		}
+		else{
+		?>
+		
+		<li><b>No Candidates are available!!!</b></li>
+     
+    <?php }?>
+                
+            </ul>
+        </div><!-- /collapsible -->
+    </div><!-- /collapsible set -->
+</div><!-- /popup -->
+	
+	
 
   <?php
 			}
