@@ -20,7 +20,6 @@ if(! $this->session->userdata('userid'))
 	 
 
 
-print_r($data['userid']);
 
 
 $data['menu']='home';
