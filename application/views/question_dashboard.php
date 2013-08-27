@@ -1,14 +1,68 @@
 <?php
 // getting session value for role id
 
-
 $roleid = $this->session->userdata('roleid');
+$userid = $this->session->userdata('userid');
 
 $aa=$question;
 $bb=$qid;
 $qno=$id;
 $p=$id-1;
 $q=$id+1;
+
+//print"QNo".$p;
+
+$a=$b=$c=$d=$uans="";
+//print"User id".$user_id;
+//print "Count".$count1;
+if($count1 > 0){
+
+//print"userid".$userid;
+//print"qid".$qid;
+//print"examid".$examid;
+
+$openans = open($ans);	
+	
+$unans = unserialize($openans);
+
+//print_r($unans);
+//print"array val".$unans[0];
+
+// For setting the check boxes or radio button as selected with users answer
+
+	switch($unans[0])
+		{	
+			case 'a' :
+				$a = "checked=checked";
+				$uans=1;
+				$b=$c=$d="";
+				//print $a;
+				break;
+		
+			case 'b' :
+				$b = "checked=checked";
+				$uans=2;
+				$a=$c=$d="";
+				//print $b;
+				break;
+		
+			case 'c' :
+				$c = "checked=checked";
+				$uans=3;
+				$b=$a=$d="";
+				//print $c;
+				break;
+		
+			case 'd' :
+				$d = "checked=checked";
+				$uans=4;
+				$b=$c=$a="";
+				//print $d;
+				break;
+		}
+}
+
+
 
 
 $qucount1=$qucount;
@@ -40,10 +94,12 @@ $hint1=empty($que['hint1'])? '0' : $que['hint1'];
 $hint2=empty($que['hint2'])? '0' : $que['hint2'];
 $hint3=empty($que['hint3'])? '0' : $que['hint3'];
 $correct_answer = empty($que['answer'])? '0' : $que['answer'];
+$mark = empty($que['score'])? '0' : $que['score'];
 
 
 $questiontype=empty($que['questiontype'])? '0' : $que['questiontype'];
 $qDesignerId=$examid;
+
 
 print "";
 print"<div class='ui-grid-b'>
@@ -52,193 +108,200 @@ print"<div class='ui-grid-b'>
     <div class='ui-block-c'><div class='ui-bar ui-bar-d' style='height:50px'><div style='float:left'><a href=''data-role='button' data-icon='alert' data-iconpos='notext' data-theme='e' data-inline='true'>alert</a></div><div style='float:left; padding-left:25px; padding-top:10px;' class='countdown'></div></div></div>
 
 </div>";
-print"<div  >
-</div>";
-print "<div style='width:600px;'>";
-	
-
-
-$flag=0;
-if($questiontype=='multiple choice multiple answer')
-{
-	
-	
-
-	print "<div><h3>".$qno.") ".ucfirst($que['question'])."</h3></div>";
-	print "<div align='right' > <a href='#popupPadded' data-rel='popup' data-role='button' data-inline='true' data-mini='true'>Hint</a> 
-	</div>";
-
-	print '
-
-		<div style="width:500px;padding:15px;">
-	
-			<label><input type="checkbox" name="checkbox[]" class="'.$qid.'" value="a"/> '.$que['option1'].' </label> 
-
-			<label><input type="checkbox" name="checkbox[]" class="'.$qid.'" value="b"/> '.$que['option2'].' </label>
-
-			<label><input type="checkbox" name="checkbox[]" class="'.$qid.'" value="c"/> '.$que['option3'].' </label>
-
-			<label><input type="checkbox" name="checkbox[]" class="'.$qid.'" value="d"/> '.$que['option4'].' </label>
-
-		</div>
-
-';
-if($roleid == 0){
-print "<div>Correct Answer is ".$correct_answer."</div>";
-}
-	$flag='1';
-}
-
-else if($questiontype=='multiple choice single answer')
-{
-
-		//print"<div class='countdown'> </div>";
-	print "<div><h3>".$qno.") ".ucfirst($que['question'])."</h3></div>";
-	print "<div align='right' > <a href='#popupPadded' data-rel='popup' data-role='button' data-inline='true' data-mini='true'>Hint</a> 
-		</div>";
-
-	print '
-
-	<div style="width:500px;padding:15px;">
-		<input type="radio" name="checkbox[]" id="radio-choice-1" value="a" class="'.$qid.'" />
-		<label for="radio-choice-1">'.$que['option1'].'</label>
-     	
-		<input type="radio" name="checkbox[]" id="radio-choice-2" value="b" class="'.$qid.'" />
-		<label for="radio-choice-2">'.$que['option2'].'</label>
-  
-		<input type="radio" name="checkbox[]" id="radio-choice-3" value="c" class="'.$qid.'" />
-		<label for="radio-choice-3">'.$que['option3'].'</label>
-  
-		<input type="radio" name="checkbox[]" id="radio-choice-4" value="d" class="'.$qid.'"	 />
-		<label for="radio-choice-4">'.$que['option4'].'</label>
-	</div>
-';
-if($roleid == 0){
-print "<div>Correct Answer is ".$correct_answer."</div>";
-}
-$flag='2';
-}
-
-else if($questiontype=='yes / no')
-{
-	print "<div><h3>".$qno.") ".ucfirst($que['question'])."</h3></div>";
-	print "<div align='right' > <a href='#popupPadded' data-rel='popup' data-role='button' data-inline='true' data-mini='true'>Hint</a> 
-	</div>";
-	print' <div style="width:500px;padding:15px;">
-	<input type="radio" name="checkbox[]" id="radio-yesno-1" value="a" class="'.$qid.'" />
-  <label for="radio-yesno-1">'.$que['option1'].'</label>
-     	
-  <input type="radio" name="checkbox[]" id="radio-yesno-2" value="b" class="'.$qid.'" />
-  <label for="radio-yesno-2">'.$que['option2'].'</label>
-	</div>	
-		';
-		if($roleid == 0){
-print "<div>Correct Answer is ".$correct_answer."</div>";
-}
-	$flag='3';
-	}
-	
-else if($questiontype=='file upload')
-{
-		
-
-		print "<div><h3>".$qno.") ".ucfirst($que['question'])."</h3></div>";
-		print"
-		 
-			<form action='".site_url('manage/do_upload/')."' method='post' enctype='multipart/form-data' data-ajax='false'>
-				<input type='file' name='userfile' size='20' />
-
-					<br /><br />
-
-				<input type='submit' value='upload' />
-
-			</form>
-
-			<div class='progress' style='position:relative; width:400px; border: 1px solid #ddd; padding: 1px; border-radius: 3px;'>
-        <div class='bar' style='background-color: #B4F5B4; width:0%; height:20px; border-radius: 3px;'></div >
-        <div class='percent' style='position:absolute; display:inline-block; top:3px; left:48%;'>0%</div >
-			</div>
-			<div id='status'></div>	
-	";
-	
-	print"<p style='color:red'>Note:- Make sure that you are uploading .doc or .pdf extension files. All other file format may not supported!!!</p>";
-	$flag='4';
-}
-else if($questiontype=='short text')
-{
-	print "<div><h3>".$qno.") ".ucfirst($que['question'])."</h3></div>";
-		
-	print '
-
-		<div style="width:500px;padding:15px;">
-
-	
-		<textarea cols="40" rows="8" name="checkbox[]" id="textarea-short" class="'.$qid.'_short"></textarea>
-
-		</div>
-  ';
-	$flag='5';
-}
-print "</div>";
-
-
 ?>
+<div class="ui-grid-a">
+  <div class="ui-block-a" style="width:60%">
+    <div class="ui-bar ui-bar-c" style="min-height:280px;">
+			<?php
+				print '<div style="width:600px;">';
+				
+				$flag=0;
+		
+				if($questiontype=='multiple choice single answer')
+				{
+
+					//print"<div class='countdown'> </div>";
+					print '<div><h3>'.$qno.') '.ucfirst($que['question']).'</h3></div>';
+					print '
+
+						<div data-role="fieldcontain">
+							<fieldset data-role="controlgroup">
+								<input type="radio" name="checkbox" id="radio-choice-1'.$qid.'" value="a" '.$a.' class="'.$qid.'" />
+								<label for="radio-choice-1'.$qid.'">'.$que['option1'].'</label>
+     	
+								<input type="radio" name="checkbox" id="radio-choice-2'.$qid.'" value="b" '.$b.' class="'.$qid.'" />
+								<label for="radio-choice-2'.$qid.'">'.$que['option2'].'</label>
+  
+								<input type="radio" name="checkbox" id="radio-choice-3'.$qid.'" value="c" '.$c.' class="'.$qid.'" />
+								<label for="radio-choice-3'.$qid.'">'.$que['option3'].'</label>
+  
+								<input type="radio" name="checkbox" id="radio-choice-4'.$qid.'" value="d" '.$d.' class="'.$qid.'"	 />
+								<label for="radio-choice-4'.$qid.'">'.$que['option4'].'</label>
+							</fieldset>
+						</div>
+					';
+
+					$flag='2';
+				}
+
+				if($questiontype=='multiple choice multiple answer')
+				{
+					print '<div><h3>'.$qno.') '.ucfirst($que['question']).'</h3></div>';
+					print '
+						<div data-role="fieldcontain">
+							<fieldset data-role="controlgroup">
+								<label><input type="checkbox" name="checkbox[]" class="'.$qid.'" value="a" '.$a.' /> '.$que['option1'].' </label> 
+
+								<label><input type="checkbox" name="checkbox[]" class="'.$qid.'" value="b" '.$b.' /> '.$que['option2'].' </label>
+
+								<label><input type="checkbox" name="checkbox[]" class="'.$qid.'" value="c" '.$c.' /> '.$que['option3'].' </label>
+
+								<label><input type="checkbox" name="checkbox[]" class="'.$qid.'" value="d" '.$d.' /> '.$que['option4'].' </label>
+							</fieldset>
+						</div>
+					';
+					$flag='1';
+				}
+
+				else if($questiontype=='yes / no')
+				{
+					print '<div><h3>'.$qno.') '.ucfirst($que['question']).'</h3></div>';
+
+					print' 
+						<div style="width:500px;padding:15px;">
+							<input type="radio" name="checkbox[]" id="radio-yesno-1" value="a" class="'.$qid.'" />
+							<label for="radio-yesno-1">'.$que['option1'].'</label>
+     	
+							<input type="radio" name="checkbox[]" id="radio-yesno-2" value="b" class="'.$qid.'" />
+							<label for="radio-yesno-2">'.$que['option2'].'</label>
+						</div>	
+					';
+	
+				$flag='3';
+				}
+	
+				else if($questiontype=='file upload')
+				{
+					
+					print '<div><h3>'.$qno.') '.ucfirst($que['question']).'</h3></div>';
+					print'
+		 
+						<form action='.site_url('manage/do_upload/').' method="post" enctype="multipart/form-data" data-ajax="false">
+							<input type="file" name="userfile" size="20" />
+
+							<br /><br />
+
+							<input type="submit" value="upload" />
+
+						</form>
+
+						<div class="progress" style="position:relative; width:400px; border: 1px solid #ddd; padding: 1px; border-radius: 3px;">
+							<div class="bar" style="background-color: #B4F5B4; width:0%; height:20px; border-radius: 3px;"></div >
+							<div class="percent" style="position:absolute; display:inline-block; top:3px; left:48%;">0%</div >
+						</div>
+						
+						<div id="status"></div>	
+					';
+	
+					print'<p style="color:red">Note:- Make sure that you are uploading .doc or .pdf extension files. All other file format may not supported!!!</p>';
+					$flag='4';
+				}
+
+				else if($questiontype=='short text')
+				{
+					print '<div><h3>'.$qno.') '.ucfirst($que['question']).'</h3></div>';
+		
+					print '
+
+						<div style="width:500px;padding:15px;">
+							<textarea cols="40" rows="8" name="checkbox[]" id="textarea-short" class="'.$qid.'_short"></textarea>
+						</div>
+					';
+					$flag='5';
+				}
+
+			print '</div>';
+			?>
+		</div>
+	</div>
+	
+	<div class="ui-block-b" style="width:40%;"> 
+		<div class="ui-bar ui-bar-c" style="min-height:280px;">
+		<?php
+			print '<div align="right" > <a href="#popupPadded" data-rel="popup" data-role="button" data-inline="true" data-icon="info" data-iconpos="right"  data-theme="b" data-mini="true">Hint</a> 
+			</div>';
+			if($roleid == 0){
+				print '<div  align="right"><a href="#" data-role="button" data-icon="check" data-iconpos="notext" data-theme="b" data-iconshadow="false" data-inline="true">Correct Answer</a>Correct Answer is '.$correct_answer.'</div>';
+				print '<div  align="right"><a href="#" data-role="button" data-icon="gear" data-iconpos="notext" data-theme="b" data-iconshadow="false" data-inline="true">Your Answer</a>Your Answer is '.$uans.'</div>';
+				
+				if($correct_answer == $uans)
+					print '<div  align="right" style="color:green"><a href="#" data-role="button" data-icon="check" data-iconpos="notext" data-theme="b" data-iconshadow="false" data-inline="true">Correct Answer</a>Your Answer is Correct</div>';
+				else
+					print '<div  align="right" style="color:red"> <a href="#" data-role="button" data-icon="delete" data-iconpos="notext" data-theme="b" data-iconshadow="false" data-inline="true">Wrong Answer</a>Your Answer is Wrong</div>';
+					
+					print '<div  align="right">  <a href="#" data-role="button" data-icon="plus" data-iconpos="notext" data-theme="b" data-iconshadow="false" data-inline="true">Marks</a>Marks Obtained '.$mark.'</div>';
+
+				
+			}
+
+		
+		?>
+					
+		</div>
+	</div>
+		
+</div>
 
 <div data-role="footer" data-theme='b'>		
-
 	<div data-role="navbar" >
 		<ul>
-			<?php
+		<?php
 			if($qno > $qucount1){
-print "<li style='min-height:120px;margin-left:350px; font-size:16px;'><p>&nbsp;</p>You have successfully completed the exam</li>";
-}
+				print '<li style="min-height:120px;margin-left:350px; font-size:16px;"><p>&nbsp;</p>You have successfully completed the exam</li>';
+			}
 			else{
-			?>
+		?>
 			
-			<li data-iconpos="left">
-
+		<li data-iconpos="left">
+			<a data-icon="arrow-l" data-iconpos="left" href="<?php print site_url('manage/exam/'.$examid.'/'.$mocktype.'/'.$date).'#'.('question-'.$p);?>" data-ajax="false" id="aboutPage">Previous</a>
+		</li>
+		
+		<li>
+			<?php if($q > $qucount1){?>
+			<a data-icon="check" href="<?php print site_url('manage/message_dialog/'.$examid) ?>"  data-rel='dialog'  data-transition='pop'> Finish</a>
 				
-				<a data-icon="arrow-l" data-iconpos="left" href="<?php print site_url('manage/exam/'.$examid.'/'.$mocktype.'/'.$date).'#'.('question-'.$p);?>" data-ajax="false" id="aboutPage">Previous</a>
-				
-
-				
-				
-				</li>
-			<li>
-				<?php if($q > $qucount1){?>
-
-				<a data-icon="check" href="<?php print site_url('manage/message_dialog/'.$examid) ?>"  data-rel='dialog'  data-transition='pop'>
-	Finish
-</a>
-				
-				<?php 
+			<?php 
 			}
 			else{
 			
-				?>
-				<a data-icon="arrow-r" data-iconpos="right" href="<?php print site_url('manage/exam/'.$examid.'/'.$mocktype.'/'.$date).'#'.('question-'.$q);?>" data-ajax='false'  >Next</a>
-				<?php }?>
-				</li> 
-			<?php
-		}
 			?>
+			<a data-icon="arrow-r" data-iconpos="right" href="<?php print site_url('manage/exam/'.$examid.'/'.$mocktype.'/'.$date.'/'.$user_id).'#'.('question-'.$q);?>" data-ajax='false'  >Next</a>
+			<?php }?>
+		</li> 
+		<?php
+			}
+		?>
 		</ul>
-		
 		
 	</div><!-- /navbar -->
 </div><!-- /footer -->
 
 <div data-role="popup" id="popupPadded" data-theme="a" data-mini='true'>
-				<ul data-role="listview" data-inset="true" style="min-width:210px;" data-theme="b" data-mini='true'>
-					<?php if($hint1 != '') {?>
-					<li><a href='#'><?php echo $hint1 ?></a></li>
-					<?php }if($hint2 != '') {?>
-					<li><a href='#'><?php echo $hint2 ?></a></li>
-					 <?php }if($hint3 != '') {?>
-					<li><a href='#'><?php echo $hint3 ?></a></li> 
-					<?php }?>
-				</ul>
-		</div>
+	<ul data-role="listview" data-inset="true" style="min-width:210px;" data-theme="b" data-mini='true'>
+	<?php if($hint1 != '') 
+		{
+	?>
+		<li><a href='#'><?php echo $hint1 ?></a></li>
+	<?php 
+		}if($hint2 != '') {
+	?>
+		<li><a href='#'><?php echo $hint2 ?></a></li>
+			<?php }if($hint3 != '') {?>
+			
+		<li><a href='#'><?php echo $hint3 ?></a></li> 
+		<?php }?>
+	</ul>
+</div>
 
 <!--<div data-role="popup" id="popupPadded" class="ui-content">
 	<p><?php //echo $hint ?></p>
@@ -268,7 +331,7 @@ $.each($('input[name=\"checkbox[]\"]:checked'), function() {
 	});
 	 
 
-		$.post('".site_url('manage/answerexam/')."',{clkid:received,qid:$qid,flag:$flag,examid:$qDesignerId},function(data){
+		$.post('".site_url('manage/answerexam/')."',{clkid:received,qid:$qid,flag:$flag,roleid:$roleid,examid:$qDesignerId},function(data){
 			//alert(data);
 			//$('#".$qid."').html(data);
 									 });

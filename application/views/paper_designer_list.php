@@ -123,18 +123,20 @@ $count = count($list['result']);
     <div data-role="collapsible-set" data-theme="b" data-content-theme="c" data-collapsed-icon="arrow-r" data-expanded-icon="arrow-d" style="margin:0; width:250px;">
         <div data-role="collapsible" data-inset="false">
             <h2>Employees</h2>
-            <ul data-role="listview">
+            <ol data-role="listview" data-autodividers="true" data-filter="true" data-inset="true">
 							<?php
 								if($rslt >0){
 			foreach ($rslt as $row){
+				$user_id = $row->userid;
 				$emp_name = $row->first_name;
 				$qdesignerid = $row->qDesignerId;
+				$date=0;
 				
 				$getexamname['table'] = 'qdesigner';
 				
 							
 							?>
-                <li><a href="<?php echo site_url('manage/exam/' . $o['qDesignerId'].'/'.$a); ?>" ><?php echo $emp_name; ?></a></li>
+                <li><a href="<?php echo site_url('manage/exam/' . $o['qDesignerId'].'/'.$a.'/'.$date.'/'.$user_id); ?>" ><?php echo $emp_name; ?></a></li>
                 
                 
            <?php
@@ -146,15 +148,16 @@ $count = count($list['result']);
 			 <?php }
            ?>     
                 
-            </ul>
+            </ol>
         </div><!-- /collapsible -->
         <div data-role="collapsible" data-inset="false">
             <h2>Candidates</h2>
-            <ul data-role="listview">
+            <ol data-role="listview" data-autodividers="true" data-filter="true" data-inset="true">
 							
 							<?php 
 		if($rslt_cand >0){
 			foreach ($rslt_cand as $cand){
+				$user_id = $row->userid;
 				$cand_name = $cand->first_name;
 	?>
 
@@ -170,7 +173,7 @@ $count = count($list['result']);
      
     <?php }?>
                 
-            </ul>
+            </ol>
         </div><!-- /collapsible -->
     </div><!-- /collapsible set -->
 </div><!-- /popup -->
