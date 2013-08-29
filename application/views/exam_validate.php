@@ -75,3 +75,20 @@
   </ul>
 </div>
 
+<?php
+	print"<form action='".site_url('manage/do_upload/')."' method='post' enctype='multipart/form-data' data-ajax='false'>
+				<input type='file' name='userfile' size='20' />
+
+					<br /><br />
+
+				<input type='submit' value='upload' />
+
+			</form>
+
+			<div class='progress' style='position:relative; width:400px; border: 1px solid #ddd; padding: 1px; border-radius: 3px;'>
+        <div class='bar' style='background-color: #B4F5B4; width:0%; height:20px; border-radius: 3px;'></div >
+        <div class='percent' style='position:absolute; display:inline-block; top:3px; left:48%;'>0%</div >
+			</div>
+			<div id='status'></div>";
+			
+			?>

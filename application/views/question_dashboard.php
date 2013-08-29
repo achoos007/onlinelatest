@@ -10,7 +10,7 @@ $qno=$id;
 $p=$id-1;
 $q=$id+1;
 
-//print"QNo".$p;
+//print"Q Count".$qucount;
 
 $a=$b=$c=$d=$uans="";
 //print"User id".$user_id;
@@ -101,10 +101,12 @@ $questiontype=empty($que['questiontype'])? '0' : $que['questiontype'];
 $qDesignerId=$examid;
 
 
-print "";
+print "Question Responded (".$qno."/".$qucount.") 	<label for='slider-2'></label>
+    <input name='slider-2' id='slider-2' data-highlight='true' data-mini='true'  min='0' max='".$qucount."' value='".$qno."' type='range'>";
 print"<div class='ui-grid-b'>
-    <div class='ui-block-a' ><div class='ui-bar ui-bar-d' style='height:50px'><div style='float:left'><a href=''data-role='button' data-icon='gear' data-iconpos='notext' data-theme='e' data-inline='true'>alert</a></div><div style='float:left; padding-left:25px; padding-top:10px;'>".$date."</div></div></div>
-     <div class='ui-block-b'><div class='ui-bar ui-bar-d' style='height:50px'><a href=''data-role='button' data-icon='grid' data-iconpos='notext' data-theme='e' data-inline='true'>alert</a>Block B</div></div>
+    <div class='ui-block-a' > <div class='ui-bar ui-bar-d' style='height:50px'><div style='float:left'><a href=''data-role='button' data-icon='gear' data-iconpos='notext' data-theme='e' data-inline='true'>alert</a></div><div style='float:left; padding-left:25px; padding-top:10px;'> Current Time : ".$date."</div></div></div>
+     <div class='ui-block-b'><div class='ui-bar ui-bar-d' style='height:50px'><a href=''data-role='button' data-icon='grid' data-iconpos='notext' data-theme='e' data-inline='true'>alert</a>Question Responded (".$qno."/".$qucount.") 
+     </div></div>
     <div class='ui-block-c'><div class='ui-bar ui-bar-d' style='height:50px'><div style='float:left'><a href=''data-role='button' data-icon='alert' data-iconpos='notext' data-theme='e' data-inline='true'>alert</a></div><div style='float:left; padding-left:25px; padding-top:10px;' class='countdown'></div></div></div>
 
 </div>";
@@ -421,7 +423,7 @@ function Tick(){
 	}
 
 	TotalSeconds -= 1;
-	
+
 	UpdateTimer();
 	
 	setTimeout(function() { 
@@ -436,6 +438,7 @@ function Tick(){
 
 function UpdateTimer() {
 var Seconds = TotalSeconds;
+//alert(Seconds);
 
 var Days = Math.floor(Seconds / 86400);
 Seconds -= Days * 86400;
@@ -447,7 +450,7 @@ var Minutes = Math.floor(Seconds / 60);
 Seconds -= Minutes * (60);
 
 
-var TimeStr = ((Days > 0) ? Days + ' days ' : '') + LeadingZero(Hours) + ':' + LeadingZero(Minutes) + ':' + LeadingZero(Seconds)
+var TimeStr = 'Remaining Time : '+((Days > 0) ? Days + ' days ' : '') + LeadingZero(Hours) + ':' + LeadingZero(Minutes) + ':' + LeadingZero(Seconds)
 
 
  $('.countdown').html(TimeStr);

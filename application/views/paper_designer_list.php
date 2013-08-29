@@ -96,9 +96,22 @@ $count = count($list['result']);
                 else{
 					?>
 					
-					<td width="100px">
-            <a href="<?php echo site_url('manage/exam/' . $o['qDesignerId'].'/'.$a); ?>" data-role="button" data-theme="b" data-mini="true" data-inline="true">Attend</a>                   
+					<td width="100px">         
+            <a href="#startExam" data-role="button" data-rel="popup" data-position-to="window" data-mini="true" data-inline="true" data-theme="b" data-transition="pop">Attend</a>
           </td>
+					
+					<div data-role="popup" id="startExam" data-overlay-theme="a" data-theme="c" data-dismissible="false" style="max-width:400px;" class="ui-corner-all">
+						<div data-role="header" data-theme="a" class="ui-corner-top">
+							<h1>Start Exam</h1>
+						</div>
+				
+						<div data-role="content" data-theme="d" class="ui-corner-bottom ui-content">
+							<h3 class="ui-title">Are you ready to start this Exam now?</h3>
+							<a href="#" data-role="button" data-inline="true" data-rel="back" data-theme="c">Exit</a>
+							<a href="<?php echo site_url('manage/exam/' . $o['qDesignerId'].'/'.$a); ?>" data-role="button" data-inline="true" data-theme="b">Start Exam</a>
+						</div>
+					</div>
+					
 					
 					<?php	
 								}
@@ -136,8 +149,20 @@ $count = count($list['result']);
 				
 							
 							?>
-                <li><a href="<?php echo site_url('manage/exam/' . $o['qDesignerId'].'/'.$a.'/'.$date.'/'.$user_id); ?>" ><?php echo $emp_name; ?></a></li>
+                <li><a href="#reviewExam" data-rel="popup" data-position-to="window" data-inline="true" data-transition="pop"><?php echo $emp_name; ?></a></li>
+                             
                 
+    <div data-role="popup" id="reviewExam" data-overlay-theme="a" data-theme="c" data-dismissible="false" style="max-width:400px;" class="ui-corner-all">
+			<div data-role="header" data-theme="a" class="ui-corner-top">
+        <h1>Review Exam</h1>
+			</div>
+			
+			<div data-role="content" data-theme="d" class="ui-corner-bottom ui-content">
+        <h3 class="ui-title">Are you ready to review this Exam now?</h3>
+        <a href="#" data-role="button" data-inline="true" data-rel="back" data-theme="c">Exit</a>
+        <a href="<?php echo site_url('manage/exam/' . $o['qDesignerId'].'/'.$a.'/'.$date.'/'.$user_id); ?>" data-role="button" data-inline="true" data-theme="b">Review Exam</a>
+			</div>
+		</div>
                 
            <?php
 				 }
