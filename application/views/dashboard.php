@@ -28,10 +28,9 @@ overflow:hidden;
 
 
 <?php
-
-
+$roleid = $this->session->userdata('roleid');
+if($roleid == 0){ 
 ?>
-
 
 
 <a href="<?php print site_url('subjects/form');?>" data-rel="dialog" >
@@ -199,16 +198,28 @@ Manage Exams
 </h3>
 </div>
 </a>
+<?php }
+?>
 
 
-
-<a href='<?php print site_url('manage/validate');?>'>
+<a href='<?php print site_url('exam/designer');?>'>
 <div class='menu-box' align='center'>
 <div class='menu-image' align='center'>
 	<img src="<?php print base_url('images/write4.jpg');?>" border='0'width='115px' />
 </div>
 <h3>
-Validate Exams
+Assigned Exams
+</h3>
+</div>
+</a>
+
+<a href='#'>
+<div class='menu-box' align='center'>
+<div class='menu-image' align='center'>
+	<img src="<?php print base_url('images/view-result.jpeg');?>" border='0'width='115px' />
+</div>
+<h3>
+View Reports
 </h3>
 </div>
 </a>

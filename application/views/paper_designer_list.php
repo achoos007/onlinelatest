@@ -3,6 +3,7 @@
 $roleid = $this->session->userdata('roleid');
 $userid = $this->session->userdata('userid');
 
+$this->load->helper('text');
 
 
 
@@ -87,7 +88,20 @@ $count = count($list['result']);
           </td>
           
           <td width="100px">
-            <a id ="<?php print $o['qDesignerId']; ?>" class="exam-delete" href="#" data-role="button" data-theme="b" data-mini="true" data-inline="true" data-icon="delete">Delete</a>                   
+ 
+            
+            <a href="#qpdelete" data-rel="popup" data-position-to="window" data-role="button" data-mini="true" data-inline="true" data-transition="pop" data-icon="delete" data-theme="b">Delete</a>
+<div data-role="popup" id="qpdelete" data-overlay-theme="a" data-theme="c" data-dismissible="false" style="max-width:400px;" class="ui-corner-all">
+    <div data-role="header" data-theme="a" class="ui-corner-top">
+        <h1>Delete Exam</h1>
+    </div>
+    <div data-role="content" data-theme="d" class="ui-corner-bottom ui-content">
+        <h3 class="ui-title">Are you sure you want to delete this Exam </h3>
+        <a href="#" data-role="button" data-inline="true" data-rel="back" data-theme="c">Cancel</a>
+        <a href="#" id="<?php print $o['qDesignerId']; ?>" class="exam-delete" data-role="button" data-inline="true" data-transition="flow" data-theme="b">Delete</a>
+    </div>
+</div>
+                             
           </td>
           
           <?php 
@@ -96,10 +110,13 @@ $count = count($list['result']);
                 else{
 					?>
 					
+					
 					<td width="100px">         
             <a href="#startExam" data-role="button" data-rel="popup" data-position-to="window" data-mini="true" data-inline="true" data-theme="b" data-transition="pop">Attend</a>
           </td>
-					
+          <td width="100px">         
+            <a href="<?php echo site_url('manage/test_page/'); ?>" data-role="button" data-theme="b" data-mini="true" data-inline="true">Validate Exam</a>   
+					</td>
 					<div data-role="popup" id="startExam" data-overlay-theme="a" data-theme="c" data-dismissible="false" style="max-width:400px;" class="ui-corner-all">
 						<div data-role="header" data-theme="a" class="ui-corner-top">
 							<h1>Start Exam</h1>
@@ -138,12 +155,13 @@ $count = count($list['result']);
             <h2>Employees</h2>
             <ol data-role="listview" data-autodividers="true" data-filter="true" data-inset="true">
 							<?php
+							$date=0;
 								if($rslt >0){
 			foreach ($rslt as $row){
 				$user_id = $row->userid;
 				$emp_name = $row->first_name;
 				$qdesignerid = $row->qDesignerId;
-				$date=0;
+				
 				
 				$getexamname['table'] = 'qdesigner';
 				
@@ -182,11 +200,23 @@ $count = count($list['result']);
 							<?php 
 		if($rslt_cand >0){
 			foreach ($rslt_cand as $cand){
-				$user_id = $row->userid;
+				$user_id = $cand->userid;
 				$cand_name = $cand->first_name;
 	?>
-
-                <li><a href="#" data-rel="dialog"><?php print $cand_name; ?></a></li>	
+							<li><a href="#reviewExamCand" data-rel="popup" data-position-to="window" data-inline="true" data-transition="pop"><?php echo $cand_name; ?></a></li>
+							
+			<div data-role="popup" id="reviewExamCand" data-overlay-theme="a" data-theme="c" data-dismissible="false" style="max-width:400px;" class="ui-corner-all">
+			<div data-role="header" data-theme="a" class="ui-corner-top">
+        <h1>Review Exam</h1>
+			</div>
+			
+			<div data-role="content" data-theme="d" class="ui-corner-bottom ui-content">
+        <h3 class="ui-title">Are you ready to review this Exam now?</h3>
+        <a href="#" data-role="button" data-inline="true" data-rel="back" data-theme="c">Exit</a>
+        <a href="<?php echo site_url('manage/exam/' . $o['qDesignerId'].'/'.$a.'/'.$date.'/'.$user_id); ?>" data-role="button" data-inline="true" data-theme="b">Review Exam</a>
+			</div>
+		</div>
+           
 		
 		<?php
 			}

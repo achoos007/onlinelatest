@@ -1,5 +1,7 @@
 <?php
-	
+
+
+
 // For getting current date
 $entrydate=entrydate();
 
@@ -43,6 +45,8 @@ if ($uid == '1') {  // 1 denotes employees
 					foreach ($emplist['result'] as $row) {
 						$st = 'bhr' . $row['staff_id'];
 						$assign_status=$row['assign_status'];
+						$img_url = 'http://198.1.110.184/~geniuste/gg/'.$row['photo'];
+						$img = empty($row['photo'])? base_url('images/cands.jpg') : $img_url;
 						if($assign_status == 'Active')
 							$status_val='Remove';
 						else
@@ -50,7 +54,7 @@ if ($uid == '1') {  // 1 denotes employees
 							
 						$str = ucfirst(strtolower($row['first_name'])) . "&nbsp;" . ucfirst(strtolower($row['last_name']));
 						print " <li data-theme='b'><a  class='$st bhr'  href='javascript:void(0);'  >
-										<img src='".base_url('images/cands.jpg')."' style='padding-top:10px;padding-left:10px;'>
+										<img src='".$img."' style='padding-top:10px;padding-left:10px;'>
 										<h2>$str</h2>
 										<div>
 											<fieldset data-role='controlgroup' data-type='horizontal'> 
@@ -76,7 +80,8 @@ if ($uid == '1') {  // 1 denotes employees
 } 
 
 // This is for candidate Details
-else {
+else if($uid == '2'){
+
 	?>
 
 	<div id="sucess-msg"></div>
@@ -84,9 +89,9 @@ else {
 		<div data-role="popup" id="popupMenu" data-theme="b">
 			<div data-role="popup" id="popupLogin" data-theme="b" class="ui-corner-all">
 				<a href="#" data-rel="back" data-role="button" data-theme="b" data-icon="delete" data-iconpos="notext" class="ui-btn-right">Close</a>
-        <form id="addcandidate" method="post" action="<?php print site_url("exam/newcandidate")  ?>">
+        <form id="addcandidate_recent" method="post" action="<?php print site_url("exam/newcandidate")  ?>">
         <div style="padding:10px 20px;">
-          <div id="candidate_success" ><h3>Please sign in</h3></div>
+          <div id="candidate_success_recent" ><h3>Please sign in</h3></div>
 						<label for="un" class="ui-hidden-accessible">Username:</label>
             <input name="user" id="un" value="" placeholder="username" data-theme="b" type="text">
             <label for="pw" class="ui-hidden-accessible">Password:</label>
@@ -234,5 +239,5 @@ else {
 		";
 	print ready($script);
 	
- ajaxform("addcandidate",'candidate_success');  
+ ajaxform("addcandidate_recent",'candidate_success_recent');  
 ?>

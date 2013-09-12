@@ -11,7 +11,12 @@ $p=$id-1;
 $q=$id+1;
 
 //print"Q Count".$qucount;
+//$testans = open('YI1FvT7vDGkoBGYn7kYi35DV9xOpceBK1nSck3csHtoMKGqFBjvtIzKBzWkM5937f4TsOpXAjo8RgtekXjTn3A==');
 
+//print"Test Encryption".$testans;
+
+//	$testunans = unserialize($testans);
+//print"Test Unserialize".$testunans;
 $a=$b=$c=$d=$uans="";
 //print"User id".$user_id;
 //print "Count".$count1;
@@ -21,9 +26,19 @@ if($count1 > 0){
 //print"qid".$qid;
 //print"examid".$examid;
 
+//print "Encrypted Answer".$ans;
+
+
+
+
 $openans = open($ans);	
+//print "Open Answer".$openans;
 	
 $unans = unserialize($openans);
+
+
+
+
 
 //print_r($unans);
 //print"array val".$unans[0];
@@ -33,32 +48,39 @@ $unans = unserialize($openans);
 	switch($unans[0])
 		{	
 			case 'a' :
-				$a = "checked=checked";
+				$a = 'data-theme="e"';
 				$uans=1;
 				$b=$c=$d="";
+				$youranswer = "Given answer is ".$uans;
+				
 				//print $a;
 				break;
 		
 			case 'b' :
-				$b = "checked=checked";
+				$b = 'data-theme="e"';
 				$uans=2;
 				$a=$c=$d="";
+				$youranswer = "Given answer is ".$uans;
 				//print $b;
 				break;
 		
 			case 'c' :
-				$c = "checked=checked";
+				$c = 'data-theme="e"';
 				$uans=3;
 				$b=$a=$d="";
+				$youranswer = "Given answer is ".$uans;
 				//print $c;
 				break;
 		
 			case 'd' :
-				$d = "checked=checked";
+				$d = 'data-theme="e"';
 				$uans=4;
 				$b=$c=$a="";
+				$youranswer = "Given answer is ".$uans;
 				//print $d;
 				break;
+				
+				
 		}
 }
 
@@ -100,7 +122,13 @@ $mark = empty($que['score'])? '0' : $que['score'];
 $questiontype=empty($que['questiontype'])? '0' : $que['questiontype'];
 $qDesignerId=$examid;
 
-
+if($roleid == 0)
+	{
+		$disabled = 'disabled';
+	}
+	else{
+		$disabled = '';
+	}
 print "Question Responded (".$qno."/".$qucount.") 	<label for='slider-2'></label>
     <input name='slider-2' id='slider-2' data-highlight='true' data-mini='true'  min='0' max='".$qucount."' value='".$qno."' type='range'>";
 print"<div class='ui-grid-b'>
@@ -121,6 +149,11 @@ print"<div class='ui-grid-b'>
 		
 				if($questiontype=='multiple choice single answer')
 				{
+					?>
+					
+		
+					
+					<?php
 
 					//print"<div class='countdown'> </div>";
 					print '<div><h3>'.$qno.') '.ucfirst($que['question']).'</h3></div>';
@@ -128,17 +161,17 @@ print"<div class='ui-grid-b'>
 
 						<div data-role="fieldcontain">
 							<fieldset data-role="controlgroup">
-								<input type="radio" name="checkbox" id="radio-choice-1'.$qid.'" value="a" '.$a.' class="'.$qid.'" />
-								<label for="radio-choice-1'.$qid.'">'.$que['option1'].'</label>
+								<input type="radio" name="checkbox" '.$a.' id="radio-choice-1" value="a"  class="'.$qid.'_single" '.$disabled.' />
+								<label for="radio-choice-1">'.$que['option1'].'</label>
      	
-								<input type="radio" name="checkbox" id="radio-choice-2'.$qid.'" value="b" '.$b.' class="'.$qid.'" />
-								<label for="radio-choice-2'.$qid.'">'.$que['option2'].'</label>
+								<input type="radio" name="checkbox" '.$b.' id="radio-choice-2" value="b"  class="'.$qid.'_single" '.$disabled.' />
+								<label for="radio-choice-2">'.$que['option2'].'</label>
   
-								<input type="radio" name="checkbox" id="radio-choice-3'.$qid.'" value="c" '.$c.' class="'.$qid.'" />
-								<label for="radio-choice-3'.$qid.'">'.$que['option3'].'</label>
+								<input type="radio" name="checkbox" '.$c.' id="radio-choice-3" value="c"  class="'.$qid.'_single" '.$disabled.' />
+								<label for="radio-choice-3">'.$que['option3'].'</label>
   
-								<input type="radio" name="checkbox" id="radio-choice-4'.$qid.'" value="d" '.$d.' class="'.$qid.'"	 />
-								<label for="radio-choice-4'.$qid.'">'.$que['option4'].'</label>
+								<input type="radio" name="checkbox" '.$d.' id="radio-choice-4" value="d"  class="'.$qid.'_single" '.$disabled.'/>
+								<label for="radio-choice-4">'.$que['option4'].'</label>
 							</fieldset>
 						</div>
 					';
@@ -149,16 +182,21 @@ print"<div class='ui-grid-b'>
 				if($questiontype=='multiple choice multiple answer')
 				{
 					print '<div><h3>'.$qno.') '.ucfirst($que['question']).'</h3></div>';
+				?>
+				
+		
+				
+				<?php
 					print '
 						<div data-role="fieldcontain">
 							<fieldset data-role="controlgroup">
-								<label><input type="checkbox" name="checkbox[]" class="'.$qid.'" value="a" '.$a.' /> '.$que['option1'].' </label> 
+								<label><input type="checkbox" name="checkbox[]" class="'.$qid.'" value="a" '.$a.' '.$disabled.' /> '.$que['option1'].' </label> 
 
-								<label><input type="checkbox" name="checkbox[]" class="'.$qid.'" value="b" '.$b.' /> '.$que['option2'].' </label>
+								<label><input type="checkbox" name="checkbox[]" class="'.$qid.'" value="b" '.$b.' '.$disabled.' /> '.$que['option2'].' </label>
 
-								<label><input type="checkbox" name="checkbox[]" class="'.$qid.'" value="c" '.$c.' /> '.$que['option3'].' </label>
+								<label><input type="checkbox" name="checkbox[]" class="'.$qid.'" value="c" '.$c.' '.$disabled.'/> '.$que['option3'].' </label>
 
-								<label><input type="checkbox" name="checkbox[]" class="'.$qid.'" value="d" '.$d.' /> '.$que['option4'].' </label>
+								<label><input type="checkbox" name="checkbox[]" class="'.$qid.'" value="d" '.$d.' '.$disabled.'/> '.$que['option4'].' </label>
 							</fieldset>
 						</div>
 					';
@@ -171,10 +209,10 @@ print"<div class='ui-grid-b'>
 
 					print' 
 						<div style="width:500px;padding:15px;">
-							<input type="radio" name="checkbox[]" id="radio-yesno-1" value="a" class="'.$qid.'" />
+							<input type="radio" name="checkbox[]" id="radio-yesno-1" value="a" class="'.$qid.'_yn" />
 							<label for="radio-yesno-1">'.$que['option1'].'</label>
      	
-							<input type="radio" name="checkbox[]" id="radio-yesno-2" value="b" class="'.$qid.'" />
+							<input type="radio" name="checkbox[]" id="radio-yesno-2" value="b" class="'.$qid.'_yn" />
 							<label for="radio-yesno-2">'.$que['option2'].'</label>
 						</div>	
 					';
@@ -230,18 +268,31 @@ print"<div class='ui-grid-b'>
 	<div class="ui-block-b" style="width:40%;"> 
 		<div class="ui-bar ui-bar-c" style="min-height:280px;">
 		<?php
+		
 			print '<div align="right" > <a href="#popupPadded" data-rel="popup" data-role="button" data-inline="true" data-icon="info" data-iconpos="right"  data-theme="b" data-mini="true">Hint</a> 
 			</div>';
 			if($roleid == 0){
 				print '<div  align="right"><a href="#" data-role="button" data-icon="check" data-iconpos="notext" data-theme="b" data-iconshadow="false" data-inline="true">Correct Answer</a>Correct Answer is '.$correct_answer.'</div>';
-				print '<div  align="right"><a href="#" data-role="button" data-icon="gear" data-iconpos="notext" data-theme="b" data-iconshadow="false" data-inline="true">Your Answer</a>Your Answer is '.$uans.'</div>';
-				
-				if($correct_answer == $uans)
-					print '<div  align="right" style="color:green"><a href="#" data-role="button" data-icon="check" data-iconpos="notext" data-theme="b" data-iconshadow="false" data-inline="true">Correct Answer</a>Your Answer is Correct</div>';
-				else
-					print '<div  align="right" style="color:red"> <a href="#" data-role="button" data-icon="delete" data-iconpos="notext" data-theme="b" data-iconshadow="false" data-inline="true">Wrong Answer</a>Your Answer is Wrong</div>';
+				if($uans > 0){
+				print '<div  align="right"><a href="#" data-role="button" data-icon="gear" data-iconpos="notext" data-theme="b" data-iconshadow="false" data-inline="true">Given Answer</a>'.$youranswer.'</div>';
+			}
+				if($correct_answer == $uans){
+					print '<div  align="right" style="color:green"><a href="#" data-role="button" data-icon="check" data-iconpos="notext" data-theme="b" data-iconshadow="false" data-inline="true">Correct Answer</a>Given Answer is Correct</div>';
 					
 					print '<div  align="right">  <a href="#" data-role="button" data-icon="plus" data-iconpos="notext" data-theme="b" data-iconshadow="false" data-inline="true">Marks</a>Marks Obtained '.$mark.'</div>';
+				}
+				else{
+				
+					if($uans > 0){
+						print '<div  align="right" style="color:red"> <a href="#" data-role="button" data-icon="delete" data-iconpos="notext" data-theme="b" data-iconshadow="false" data-inline="true">Wrong Answer</a>Given Answer is Wrong</div>';
+					}
+					else{
+						print '<div  align="right" style="color:red"> <a href="#" data-role="button" data-icon="delete" data-iconpos="notext" data-theme="b" data-iconshadow="false" data-inline="true">Wrong Answer</a>Question not attended!!!</div>';
+					}
+					print '<div  align="right">  <a href="#" data-role="button" data-icon="plus" data-iconpos="notext" data-theme="b" data-iconshadow="false" data-inline="true">Marks</a>Marks Obtained 0</div>';
+					
+				}
+				
 
 				
 			}
@@ -269,10 +320,19 @@ print"<div class='ui-grid-b'>
 		</li>
 		
 		<li>
-			<?php if($q > $qucount1){?>
-			<a data-icon="check" href="<?php print site_url('manage/message_dialog/'.$examid) ?>"  data-rel='dialog'  data-transition='pop'> Finish</a>
+			<?php if($q > $qucount1){
+				if($roleid == 0){
+				?>
+				
+			<a data-icon="check" href=""  data-rel='dialog'  data-transition='pop'> Generate Result</a>
 				
 			<?php 
+				}
+				else{
+					?>
+					<a data-icon="check" href="<?php print site_url('manage/message_dialog/'.$examid) ?>"  data-rel='dialog'  data-transition='pop'> Finish</a>
+				<?php	
+				}
 			}
 			else{
 			
@@ -351,6 +411,27 @@ $.each($('input[name=\"checkbox[]\"]:checked'), function() {
 	
 	
 });
+
+$('.".$qid."_single').click(function(){
+	
+			ansval = $('input:checked').val();
+			//alert(ansval);
+			$.post('".site_url('manage/answerexam/')."',{clkid:ansval,qid:$qid,flag:$flag,roleid:$roleid,examid:$qDesignerId},function(data){
+			//alert(data);
+			//$('#".$qid."').html(data);
+									 });
+});
+
+$('.".$qid."_yn').click(function(){
+	
+			ansval = $('input:checked').val();
+			//alert(ansval);
+			$.post('".site_url('manage/answerexam/')."',{clkid:ansval,qid:$qid,flag:$flag,roleid:$roleid,examid:$qDesignerId},function(data){
+			//alert(data);
+			//$('#".$qid."').html(data);
+									 });
+});
+
 
 $('.".$qid."_short').change(function(){
 	//alert('Hai');
