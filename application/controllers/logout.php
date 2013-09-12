@@ -16,10 +16,30 @@ class Logout extends CI_Controller {
   
   function logout()
   {
-    $this->session->unset_userdata('logged_in');
-	$this->session->unset_userdata('sess_array');
-	$this->session->sess_destroy();
-    redirect('login', 'refresh');
+		
+
+		
+		$roleid = $this->session->userdata('roleid');
+		
+		
+		
+		if($roleid == 0 ||  $roleid == 1)
+		{	
+			
+			$this->session->unset_userdata('logged_in');
+			$this->session->unset_userdata('sess_array');
+			$this->session->sess_destroy();
+			
+			redirect('http://198.1.110.184/~geniuste/gg/login.php', 'refresh');
+		}
+		else{
+			
+			$this->session->unset_userdata('logged_in');
+			$this->session->unset_userdata('sess_array');
+			$this->session->sess_destroy();
+			
+			redirect('login', 'refresh');
+		}
   }
 
 

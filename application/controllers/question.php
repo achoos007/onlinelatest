@@ -1045,7 +1045,21 @@ function singleanswer(){
 }	
 
 	
+public function _output($output)
+{
 
+
+
+
+if(! $this->session->userdata('userid'))		
+{
+redirect('login', 'refresh');
+
+}		
+
+else
+echo $output;
+}
 	
 
 	

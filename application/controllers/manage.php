@@ -23,7 +23,7 @@ class Manage extends CI_Controller {
 	
 	
 		$this->exam();
-	
+		
 
 	
 	}
@@ -63,8 +63,29 @@ $data['main']['validate']['page']  =	$this->load->view("exam_validate",$data,TRU
 
 // ---------------------------------------------------------------------
 
+//$this->load->library('image_lib');
+$config['image_library'] = 'gd2';
+$config['source_image'] = '/var/www/onlinelatest/trunk/images/cands.jpg';
+$config['new_image'] = '/var/www/onlinelatest/trunk/images/new_image.jpg';
 
 
+$config['wm_text'] = 'Genius Group';
+$config['wm_type'] = 'text';
+//$config['wm_font_path'] = './system/fonts/texb.ttf';
+$config['wm_font_size'] = '26';
+$config['wm_font_color'] = '000000';
+$config['wm_opacity'] = '25%';
+$config['wm_vrt_alignment'] = 'bottom';
+$config['wm_hor_alignment'] = 'right';
+$config['wm_padding'] = '70';
+
+//$this->image_lib->initialize($config); 
+
+
+
+$this->load->library('image_lib', $config);
+
+$this->image_lib->watermark();
 
 
 
@@ -79,6 +100,8 @@ $this->load->view("theme/footer",$data);
 	}
 	
 function exam($examid=0,$mocktype="off",$date=0,$user_id=0) {
+	
+$this->load->helper('text');
 $data['examid']=intval($examid);
 $data['mocktype']=$mocktype;
 $data['user_id']=intval($user_id);
@@ -350,7 +373,7 @@ function finish_exam(){
 		$config['upload_path'] = 'uploads/answers';
 		$config['allowed_types'] = 'csv|doc|pdf|txt';
 		//$config['max_size']	= '1000';
-		$config['max_width']  = '1024';
+		//$config['max_width']  = '1024';
 		$config['max_height']  = '768';
 
 		$filename = $_FILES['userfile']['name'];
@@ -380,19 +403,19 @@ $line_of_text = fgetcsv($file_handle, 1024);
 
 
 
-$add['table'] = 'ex_hotel';
-
+$add['table'] = 'hotel_img';
+//$add['data']['id'] = $line_of_text[0];
 $add['data']['HotelID'] = $line_of_text[0];
 $add['data']['Name'] = $line_of_text[1];
-$add['data']['AirportCode'] = $line_of_text[2];
-$add['data']['Address1'] = $line_of_text[3];
-$add['data']['Address2'] = $line_of_text[4];
-$add['data']['Address3'] = $line_of_text[5];
-$add['data']['City'] = $line_of_text[6];
-$add['data']['StateProvince'] = $line_of_text[7];
-$add['data']['Country'] = $line_of_text[8];
-$add['data']['PostalCode'] = $line_of_text[9];
-$add['data']['Longitude']	=	$line_of_text[10];
+$add['data']['Caption'] = $line_of_text[2];
+$add['data']['URL'] = $line_of_text[3];
+$add['data']['Supplier'] = $line_of_text[4];
+$add['data']['Width'] = $line_of_text[5];
+$add['data']['Height'] = $line_of_text[6];
+$add['data']['ByteSize'] = $line_of_text[7];
+$add['data']['ThumbnailURL'] = $line_of_text[8];
+$add['data']['DefaultImage'] = $line_of_text[9];
+/*$add['data']['Longitude']	=	$line_of_text[10];
 $add['data']['Latitude'] = $line_of_text[11];
 $add['data']['LowRate'] = $line_of_text[12];
 $add['data']['HighRate'] = $line_of_text[13];
@@ -463,9 +486,9 @@ $add['data']['HasParkingGarage'] = $line_of_text[75];
 $add['data']['HasElectronicRoomKeys'] = $line_of_text[76];
 $add['data']['HasCoffeeTeaMaker'] = $line_of_text[77];
 $add['data']['HasSafe'] = $line_of_text[78];
-$add['data']['HasVideoCheckOut'] = $line_of_text[79];
+$add['data']['HasVideoCheckOut'] = $line_of_text[79];*/
 
-
+print_r($add);
 if(!empty($line_of_text)){
 	insert($add);
 print "Data Inserted Successfully";
@@ -486,6 +509,18 @@ fclose($file_handle);
 }
 	}
 	
+	function test_page(){
+		
+		$data ="";
+		
+		$this->load->view("theme/header",$data);
+
+		$this->load->view("pagetest",$data);
+
+		$this->load->view("theme/footer",$data);
+		
+	}
+	
 	function csv_upload()
 	{
 		
@@ -502,6 +537,24 @@ fclose($file_handle);
 		
 		
 	}
+	
+	
+	
+	public function _output($output)
+{
+
+
+
+
+if(! $this->session->userdata('userid'))		
+{
+redirect('login', 'refresh');
+
+}		
+
+else
+echo $output;
+}
 	
 
 }
