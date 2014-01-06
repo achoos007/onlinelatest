@@ -628,7 +628,7 @@ class Spreadsheet_Excel_Reader
                             $isdate = FALSE;
                             if ($indexCode > 0){
                                 if (isset($this->formatRecords[$indexCode]))
-                                    $formatstr = $this->formatRecords[$indexCode];
+                                    $formatstr = empty($this->formatRecords[$indexCode])?0:$this->formatRecords[$indexCode];
                                 //echo '.other.';
                                 //echo "\ndate-time=$formatstr=\n";
                                 if ($formatstr)
