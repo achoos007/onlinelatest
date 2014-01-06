@@ -4,7 +4,7 @@
 ?>
 
 <div data-role="content" data-theme="b">
-	<center><h3>Do you want to sumit the <?php print $q_title; ?> for validation? </h3>     
+	<center><h3>Do you want to submit the <?php print $q_title; ?> for validation? </h3>     
 	<p>&nbsp;</p> 
 	<a href="<?php print site_url('exam/designer')?>" data-role="button"  data-theme="b" data-mini="true" id="<?php print $examid; ?>" class="exam_finish">Yes</a>  
 	<?php print close('No'); ?>

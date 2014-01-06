@@ -14,11 +14,15 @@ print empty($this->title)?"Admin":$this->title;
 
 <link rel="stylesheet" type="text/css" href="<?php echo base_url("css/onlineexam.css"); ?>" media="screen" />
 <link rel="stylesheet" type="text/css" href="<?php echo base_url("css/exam.css"); ?>" media="screen" />
+<link rel="stylesheet" type="text/css" href="<?php echo base_url("css/timeTo.css"); ?>" media="screen" />
 
 
 <script type="text/javascript" src="<?php print base_url("js/jquery.js"); ?>"></script>
 <script type="text/javascript" src="<?php print base_url("js/jquery2.js"); ?>"></script> 
 <script type="text/javascript" src="<?php print base_url("js/jquery.form.js"); ?>"></script> 
+<script type="text/javascript" src="<?php print base_url("js/jquery.downCount.js"); ?>"></script> 
+<script type="text/javascript" src="<?php print base_url("js/jquery.timeTo.js"); ?>"></script> 
+
 
 
 

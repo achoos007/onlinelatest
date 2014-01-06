@@ -65,16 +65,6 @@ if(!empty($main)){
 	   	 
 	 ?>
 
-<script type='text/javascript'>
-function refreshPage()
-{
-    jQuery.mobile.changePage(window.location.href, {
-        allowSamePageTransition: true,
-        transition: 'none',
-        reloadPage: true
-    });
-}
-</script>
 
 
 

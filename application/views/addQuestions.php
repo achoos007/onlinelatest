@@ -49,9 +49,10 @@ print title($title);
 <form id='AddQuestionsForm' action="<?php print site_url("question/qupload");?>" method="post" data-ajax='false'  enctype="multipart/form-data" >
 
 <div>
-<h4>Please Upload an Excel File in specified format</h4>
-</div>
+<h4>Please Upload an Excel File in specified format<a href="<?php print site_url("question/test_download/");?>" data-ajax="false" data-rel="popup" data-role="button" class="ui-icon-alt" data-inline="true" data-transition="pop" data-icon="info" data-theme="e" data-iconpos="notext">Click here to download</a></h4>
 
+</div>
+ 		 	 	 	 	 	 	 	 	 	 	 	 	
 <input type="file" name="excelFile" id="excelFile"  />
 
 <div align='center'>

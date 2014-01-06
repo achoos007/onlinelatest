@@ -4,6 +4,9 @@
 $exist['table']='qexam';
 $exist['where']['qDesignerId']=$examid;
 $exist=getsingle($exist);
+
+empty($exist)?0:$exist;
+
 //pa($exist);
 if(!empty($exist['equestions'])){
 $qu=unserialize($exist['equestions']);
@@ -26,7 +29,7 @@ $sub=getsingle($sub);
 
 ?>
 <div class='dashboard-box'>
-	<div class='dashboard-title'><?php pa($ques['title']);?></div>
+	<div class='dashboard-title'><?php pa(ucfirst($ques['title']));?></div>
 	<table>
 		<tr><td>Minimum Mark :</td><td><?php pa($ques['minMark']);?></td></tr>
 		<tr><td>Duration :</td><td><?php pa($ques['duration']);?></td></tr>
@@ -45,8 +48,8 @@ $sub=getsingle($sub);
 		Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries, but also the leap into electronic typesetting, remaining essentially unchanged. It was popularised in the 1960s with the release of Letraset sheets containing Lorem Ipsum passages, and more recently with desktop publishing software like Aldus PageMaker including versions of Lorem Ipsum.
 		</br></br>
 		Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries, but also the leap into electronic typesetting, remaining essentially unchanged. It was popularised in the 1960s with the release of Letraset sheets containing Lorem Ipsum passages, and more recently with desktop publishing software like Aldus PageMaker including versions of Lorem Ipsum.
-		</br></br>
-		Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries, but also the leap into electronic typesetting, remaining essentially unchanged. It was popularised in the 1960s with the release of Letraset sheets containing Lorem Ipsum passages, and more recently with desktop publishing software like Aldus PageMaker including versions of Lorem Ipsum.
+
+
 		</td></tr>
 		</table>
 

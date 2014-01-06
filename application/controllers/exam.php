@@ -25,13 +25,11 @@ $data['main']['open_question_list']['right']['url'] = site_url("exam/form");
 }
 
 
-$get_type = "SELECT ea.userid,ea.typeid,ea.qDesignerId,emp.first_name FROM examanswer as ea, tbl_staffs as emp WHERE typeid = 1 and ea.userid = emp.staff_id group by emp.first_name ";
+//$get_type = "SELECT ea.userid,ea.typeid,ea.qDesignerId,emp.first_name FROM examanswer as ea, tbl_staffs as emp WHERE typeid = 1 and ea.userid = emp.staff_id group by emp.first_name ";
 	
-	$data['rslt'] = $this->login_db->get_results($get_type);
+	//$data['rslt'] = $this->login_db->get_results($get_type);
 		
-	$get_type = "SELECT ea.userid,ea.typeid,ea.qDesignerId,cand.first_name FROM examanswer as ea, candidate as cand WHERE typeid = 2 and ea.userid = cand.candidate_id group by cand.first_name ";
-		
-	$data['rslt_cand'] = $this->login_db->get_results($get_type);
+	
 
 $data['main']['open_question_list']['title'] = "Previous Question Papers";	
 $data['main']['open_question_list']['page'] = $this->load->view("paper_designer_list", $data, TRUE);	
@@ -82,10 +80,12 @@ $this->load->view("theme/footer", $data);
 function edit() {
 $data['menu'] = 'exam';
 //print_r($_POST);
-$this->form_validation->set_rules('title', 'Title', 'required');
-$this->form_validation->set_rules('mark', 'Minimum Mark', 'required|integer|max_length[3]');
-$this->form_validation->set_rules('duration', 'Duration', 'required|integer');
-$this->form_validation->set_rules('alerttime', 'Alert time', 'required|integer');
+///$this->form_validation->set_rules('title', 'Title', 'required');
+$this->form_validation->set_rules('title', 'Title', 'required|alpha_dash|callback_title');
+$this->form_validation->set_rules('mark', 'Minimum Mark', 'required|is_natural_no_zero|max_length[3]');
+//$this->form_validation->set_rules('duration', 'Duration', 'required|is_natural_no_zero');
+$this->form_validation->set_rules('subjectid', 'Subject name', 'required');
+$this->form_validation->set_rules('alerttime', 'Alert time', 'required|is_natural_no_zero');
 $this->form_validation->set_rules('mm_0_count','Multiple answer easy type','integer');
 $this->form_validation->set_rules('mm_1_count','Multiple answer moderate type','integer');
 $this->form_validation->set_rules('mm_2_count','Multiple answer tough type','integer');
@@ -107,19 +107,27 @@ $this->form_validation->set_rules('fu_1_count','File upload moderate type','inte
 $this->form_validation->set_rules('fu_2_count','File upload tough type','integer');
 $this->form_validation->set_rules('fu_3_count','File upload mandatory type','integer');
 
+
+
+
 if ($this->form_validation->run() == FALSE) {
 echo validation_errors();
 } else {
 	
 	//pa($_POST);
-	
+
+$hour = $this->input->post('hour');	
+$minutes = $this->input->post('minutes');	
+//$duration = $hour + $minutes;
+
 	
 $data['qid'] = intval($this->input->post('qdesignerid',TRUE));
 $update['table'] = 'qdesigner';
 $update['data']['title'] = $this->input->post('title');
 $update['data']['minMark'] = $this->input->post('mark');
-$update['data']['duration'] = $this->input->post('duration');
-$update['data']['alertTime'] = $this->input->post('alerttime');
+$update['data']['duration_hour'] = $hour;
+$update['data']['duration_minutes'] = $minutes;
+$update['data']['alertTime'] = ($this->input->post('alerttime'))*60;
 $update['data']['negative'] = $this->input->post('negativemark');
 $update['data']['grading'] = $this->input->post('grading');
 $update['data']['shuffling'] = $this->input->post('shuffling');
@@ -136,7 +144,7 @@ $update['data']['mmMandatory'] = $this->input->post('mm_3_count');
 $update['data']['msEasy'] = $this->input->post('ms_0_count');
 $update['data']['msModerate'] = $this->input->post('ms_1_count');
 $update['data']['msTough'] = $this->input->post('ms_2_count');
-$update['data']['msMandatory'] = $this->input->post('ms_3 _count');
+$update['data']['msMandatory'] = $this->input->post('ms_3_count');
 $update['data']['tfEasy'] = $this->input->post('yn_0_count');
 $update['data']['tfModerate'] = $this->input->post('yn_1_count');
 $update['data']['tfTough'] = $this->input->post('yn_2_count');
@@ -144,30 +152,65 @@ $update['data']['tfMandatory'] = $this->input->post('yn_3_count');
 $update['data']['desEasy'] = $this->input->post('st_0_count');
 $update['data']['desModerate'] = $this->input->post('st_1_count');
 $update['data']['desTough'] = $this->input->post('st_2_count');
-$update['data']['desMandatory'] = $this->input->post('st_0_count');
+$update['data']['desMandatory'] = $this->input->post('st_3_count');
 $update['data']['fileEasy'] = $this->input->post('fu_0_count');
 $update['data']['fileModerate'] = $this->input->post('fu_1_count');
 $update['data']['fileTough'] = $this->input->post('fu_2_count');
 $update['data']['fileMandatory'] = $this->input->post('fu_3_count');
 $update['data']['status'] = $this->input->post('status');
+$update['data']['entrydate'] = entrydate();
 
 
 
 if ($data['qid'] > 0) {
 $update['where']['qDesignerId'] = $this->input->post('qdesignerid');
 if (update($update)) {
-print"Data Updated Sucessfully".ready('setTimeout("refreshPage()",1000);');
+print"Data Updated Sucessfully".ready('setTimeout(location.reload(), 1000)');
 }
 else
 print"Error Occured";
 }
 else {
 insert($update);
-print "Data Inserted Successfully";
-//redirect('exam/designer/', 'refresh');
+print "Data Inserted Successfully".ready('setTimeout(location.reload(), 1000)');;
+//redirect('http://localhost/onlinelatest/trunk/index.php?/exam/designer', 'refresh');
+
 
 }
 }
+}
+
+public function title($str){
+	
+	$title['table']='qdesigner';
+	$title['where']['title']=$str;
+	
+	
+	 
+	$data['qdesignerid']=intval($this->input->post('qdesignerid')); 
+	$title['where']['qdesignerid !=']=$data['qdesignerid'];
+	
+	
+	
+	
+	$title=getsingle($title);
+	//printqq();
+	if(!empty($title))
+	{
+	$title=$title['title'];
+
+	if($str==$title){
+		$this->form_validation->set_message('title', $title.' is already exist');
+			return FALSE;
+		}
+		else
+		{	
+			$this->form_validation->set_message('title',$title.' is available ');
+			return TRUE;
+		}
+	
+	}
+	
 }
 
 function delete() {
@@ -176,6 +219,16 @@ $qdid = intval($this->input->post('clkid'));
 $del['table'] = 'qdesigner';
 $del['where']['qDesignerId'] = $qdid;
 delete($del);
+}
+
+function candDelete() {
+
+$cid = intval($this->input->post('clkid'));
+
+$del['table'] = 'candidate';
+$del['where']['candidate_id'] = $cid;
+$del['data']['status'] = 'Inactive';
+update($del);
 }
 
 function remove() {
@@ -234,12 +287,20 @@ function assigneelist($uid=0,$qid=0,$assignid=0){
         $this->title = "Designer";
         $data['title']=" List View ";  
         $data['uid']=intval($uid);
+        if($data['uid'] == 1)
+					$title = "Employee List";
+				else if($data['uid'] == 2)
+					$title = "Candidate List";
+				
+				
+				
+					
         $data['qid'] = intval($qid);
         $data['assignid'] = intval($assignid);
         $data['assigneeid']=intval($this->input->post('assigneeid'));
         $data['main']['open_question_list']['right']['text'] = "Previous Question Papers";
         $data['main']['open_question_list']['right']['url'] = site_url("exam/designer");
-        $data['main']['open_question_list']['title'] = "Employee List";
+        $data['main']['open_question_list']['title'] = $title;
         $data['main']['open_question_list']['page'] = $this->load->view("assigneelist", $data, TRUE);
 
         $this->load->view("theme/header", $data);
@@ -438,11 +499,25 @@ function assigneelist($uid=0,$qid=0,$assignid=0){
 		}
 
    function user_selection($uid=0,$userid=0,$qid=0,$entrydate=0){
-        
+		 
+				
+				
+				$scheduled_day =  $this->input->post('scheduled_day');
+				if($scheduled_day < 10)
+				$scheduled_day = "0".$scheduled_day;
+				$scheduled_month =  $this->input->post('scheduled_month');
+				$scheduled_year =  $this->input->post('scheduled_year');
+				$scheduled_date = array($scheduled_year,$scheduled_month ,$scheduled_day);
+				$scheduled = implode("-", $scheduled_date);
+        //print $scheduled;
         $uid=intval($this->input->post('uid'));
-        $userid=intval($this->input->post('clkid'));
+        $userid=intval($this->input->post('staff_id'));
+       // $userid=intval($this->input->post('clkid'));
         $qid=intval($this->input->post('qid'));
         $entrydate=intval($this->input->post('entrydate'));
+        
+        
+       // print "UID,QID,Entrydate". $uid. ", ". $qid. ", ".$entrydate.", ".$userid;
          // for getting Question Designer name and User Name
         
         $details['table']='qdesigner';
@@ -483,35 +558,41 @@ function assigneelist($uid=0,$qid=0,$assignid=0){
             if($status=='Active'){
                 $update['where']['user_id']=$userid;
                 $update['where']['qid']=$qid;
-                $update['data']['assign_status']='Inactive';
+                $update['data']['assign_status']='Active';
+                $update['data']['c_status']=0;
                 $update['data']['type']=$type;
                 $update['data']['entrydate']=$entrydate;
-                $result = update($update);
+                $update['data']['scheduled_date']=$scheduled;
+               $result = update($update);
                 //print "<b>".$username ."</b>&nbsp; has been removed from <b>".$title."</b> exam";
+                print "Date Updated".ready('setTimeout("refreshPage()",1000);');
                 if($result){
                 $flg=0;
-                print $flg;
+               // print $flg;
 								}
 								else{
 									$flg=3;
-                print $flg;
+                //print $flg;
 								}
             }
             else{
                 $update['where']['user_id']=$userid;
                 $update['where']['qid']=$qid;
                 $update['data']['assign_status']='Active';
+                $update['data']['c_status']=0;
                 $update['data']['type']=$type;
                 $update['data']['entrydate']=$entrydate;
+                $update['data']['scheduled_date']=$scheduled;
                 $result = update($update);
                 //print "<b>".$username."</b>&nbsp; has been sucessfully added to <b>".$title."</b> exam";
+                print "Date Scheduled".ready('setTimeout("refreshPage()",1000);');
                  if($result){
                 $flg=1;
-                print $flg;
+                //print $flg;
 								}
 								else{
 									$flg=3;
-                print $flg;
+                //print $flg;
 								}
             }
         }
@@ -520,17 +601,20 @@ function assigneelist($uid=0,$qid=0,$assignid=0){
             $update['data']['user_id']=$userid;
             $update['data']['qid']=$qid;
             $update['data']['assign_status']='Active';
+            $update['data']['c_status']=0;
             $update['data']['type']=$type;
             $update['data']['entrydate']=$entrydate;
-            $result = insert($update);
+            $update['data']['scheduled_date']=$scheduled;
+           $result = insert($update);
             //print "<b>".$username."</b>&nbsp; has been sucessfully added to <b>".$title."</b> exam";
+            print "Date Scheduled".ready('setTimeout("refreshPage()",1000);');
              if($result){
                 $flg=1;
-                print $flg;
+                //print $flg;
 								}
 								else{
 									$flg=3;
-                print $flg;
+                //print $flg;
 								}
         }
         
@@ -546,6 +630,73 @@ $this->email->send();
 
 echo $this->email->print_debugger();*/
     }
+    
+  function user_remove() {
+		
+		//$entrydate=entrydate();
+		
+		 $uid=intval($this->input->post('uid'));
+     $staff_id=intval($this->input->post('staff_id'));
+     // $userid=intval($this->input->post('clkid'));
+     $qid=intval($this->input->post('qid'));
+     $entrydate=intval($this->input->post('entrydate'));
+		
+		//print $uid.$staff_id.$qid;
+		
+		
+		  if($uid==1){
+					$user_det['table']='tbl_staffs';
+					$user_det['where']['staff_id']=$staff_id;
+					$type = 1;
+				}
+				else{
+					$user_det['table']='candidate';
+					$user_det['where']['candidate_id']=$staff_id;
+					$type = 2;
+				}
+				
+				$count='0';
+					$assign['table']='assigned_users';
+					$assign['where']['user_id']=$staff_id;
+					$assign['where']['qid']=$qid;
+					$count=  total_rows($assign);
+        
+        
+        $update['table']='assigned_users';
+        if($count>0)
+        {
+        $assign=  getsingle($assign);
+        $status=$assign['assign_status'];
+        
+            if($status=='Active'){
+                $update['where']['user_id']=$staff_id;
+                $update['where']['qid']=$qid;
+                $update['data']['assign_status']='Inactive';
+                $update['data']['type']=$type;
+                $update['data']['entrydate']=$entrydate;
+                
+               // print_r($update);
+                //$update['data']['scheduled_date']=$scheduled;
+               $result = update($update);
+                //print "<b>".$username ."</b>&nbsp; has been removed from <b>".$title."</b> exam";
+               //print "Removed".ready('setTimeout("refreshPage()",1000);');	
+               //redirect('http://localhost/onlinelatest/trunk/index.php?/exam/assigneelist/'.$uid.'/'.$qid, 'refresh');
+               
+               
+               if($result){
+									
+								//print "Removed".ready('setTimeout("refreshPage()",1000);');	
+                $flg=0;
+                print $flg;
+								}
+								else{
+									$flg=3;
+                print $flg;
+								}
+            }	
+					}
+				
+	}  
     
     function test($userid=0,$qid=0){
 			
@@ -612,6 +763,8 @@ $ques['where']['qdesignerid']=$data['examid'];
 
 
 $ques=getsingle($ques); 
+$subject_id = $ques['subjectid'];
+
 $data['ques']=$ques;
 if(!empty($ques)){
 // pa($ques);
@@ -666,22 +819,28 @@ if(!empty($ques)){
 $qarray['multiple choice multiple answer']['moderate']=$ques['mmModerate'];
 $qarray['multiple choice multiple answer']['easy']=$ques['mmEasy'];
 $qarray['multiple choice multiple answer']['tough']=$ques['mmTough'];
+$qarray['multiple choice multiple answer']['Mandatory']=$ques['mmMandatory'];
 
 $qarray['multiple choice single answer']['moderate']=$ques['msModerate'];
 $qarray['multiple choice single answer']['easy']=$ques['msEasy'];
 $qarray['multiple choice single answer']['tough']=$ques['msTough'];
+$qarray['multiple choice single answer']['mandatory']=$ques['msMandatory'];
+
 
 $qarray['short text']['moderate']=$ques['desModerate'];
 $qarray['short text']['easy']=$ques['desEasy'];
-$qarray['short text']['tough']=$ques['fileTough'];
+$qarray['short text']['tough']=$ques['desTough'];
+$qarray['short text']['mandatory']=$ques['desMandatory'];
 
 $qarray['file upload']['moderate']=$ques['fileModerate'];
 $qarray['file upload']['easy']=$ques['fileEasy'];
 $qarray['file upload']['tough']=$ques['fileTough'];
+$qarray['file upload']['mandatory']=$ques['fileMandatory'];
 
 $qarray['yes / no']['moderate']=$ques['tfModerate'];
 $qarray['yes / no']['easy']=$ques['tfEasy'];
 $qarray['yes / no']['tough']=$ques['tfTough'];
+$qarray['yes / no']['mandatory']=$ques['tfMandatory'];
 
 
 
@@ -694,7 +853,8 @@ foreach($qarray as $type=>$mode){
 foreach($mode as $m=>$count){
 $query=" select 	* from qBank	where 
 questiontype='".$type."' and
-level='".$m."'
+level='".$m."' and status='assigned' and 
+find_in_set('".$subject_id."',`n_subjectid`) 
 ORDER BY RAND()
 limit ".$count." "; 
 $query=qry($query);
@@ -781,7 +941,6 @@ $q++;
 $data['question'] = $ques; 
 $data['main'][$q]['title'] = "Question ".$q;
 $data['main'][$q]['footermenu'] = '
-how to check comma separated value in mysql
 
 <div data-role="navbar">
 <ul>
@@ -839,6 +998,14 @@ function qvalue(){
 
 function newcandidate($cid=0){
 	
+	$this->load->library('email');
+	
+	$config['mailtype'] = 'html';
+	$config['newline'] = '\r\n';
+	$config['wordwrap'] = TRUE;
+	
+	$this->email->initialize($config);
+	
 	$cid=intval($this->input->post('cid'));
 	
 	$this->form_validation->set_rules('user', 'Username', 'required|min_length[6]|callback_username_check');
@@ -868,17 +1035,39 @@ function newcandidate($cid=0){
 	$update['data']['country_code']=$this->input->post('country_code');
 	$update['data']['status']='Active';
 	
+	$name = ucfirst($this->input->post('firstname'))." ".ucfirst($this->input->post('lastname'));
+	$toemail = $this->input->post('email');
+	//
+	$msg = "<b>Dear ".$name."</b> , \r\n
+	Thank you for enrolling with genius group. <a href='http://198.1.110.184/~geniuste/gg/onlinelatest/index.php/login'>Click here</a> to login to your examination section with the following username and password. \r\n 
+	<b> Username : </b>".$this->input->post('user')." \r\n
+	<b>Password : </b>".$this->input->post('pass');
+	
 	if($cid > 0){
 		$update['where']['candidate_id']=$cid;
 		if(update($update)){
-			print "Data updated successfully";
+			print "Data updated successfully".ready('setTimeout("refreshPage()",1000);');
 		}
 		else
 		print "Error Occured!!!";
 	}
 	else{
 		insert($update);
-		print "Data inserted successfully";
+		print "Data inserted successfully".ready('setTimeout("refreshPage()",1000);');
+		
+		
+
+$this->email->from('info@geniusadvt.com', 'Genius Group');
+$this->email->to($toemail);
+//$this->email->cc('biju@geniusadvt.com');
+//$this->email->bcc('them@their-example.com');
+
+$this->email->subject('Login Details');
+$this->email->message($msg);
+
+$this->email->send();
+
+//echo $this->email->print_debugger();
 	}
 		
 }
@@ -1096,6 +1285,47 @@ redirect('login', 'refresh');
 
 else
 echo $output;
+}
+
+function start_exam_time($qid=0,$userid=0,$roleid=0,$currdate=""){
+	$qid=intval($this->input->post('qid'));
+	$userid=intval($this->input->post('userid'));
+	$roleid=intval($this->input->post('roleid'));
+	$currdate=$this->input->post('currdate');
+	//print "Hi".$qid.",Userid:".$userid.",Roleid".$roleid."Current Date".$currdate;
+	$count = 0;
+	$exam_time['table'] = 'exam_time_log';
+	$exam_time['where']['userid'] = $userid;
+	$exam_time['where']['typeid'] = $roleid;
+	$exam_time['where']['qdesignerid'] = $qid;
+	$count=  total_rows($exam_time);
+        
+        
+  $exam_time['table']='exam_time_log';
+  
+  if($count>0)
+	{
+		$exam_time['data']['start_time'] = $currdate;
+		update($exam_time);
+		//print_r($exam_time);
+		print "Data updated successfully";
+
+	}
+	else{
+		$exam_time['data']['userid'] = $userid;
+		$exam_time['data']['typeid'] = $roleid;
+		$exam_time['data']['qdesignerid'] = $qid;
+		$exam_time['data']['start_time'] = $currdate;
+		//print_r($exam_time);
+		insert($exam_time);
+		
+		print "Data inserted successfully";
+	}
+	
+
+	
+	
+	
 }
 
 }

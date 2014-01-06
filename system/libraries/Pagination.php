@@ -287,8 +287,8 @@ class CI_Pagination {
 						else
 						{
 							$n = ($n == '') ? '' : $this->prefix.$n.$this->suffix;
-
-							$output .= $this->num_tag_open.'<a '.$this->anchor_class.'href="'.$this->base_url.$n.'">'.$loop.'</a>'.$this->num_tag_close;
+							$loop_link = ($loop * $this->per_page) - $this->per_page; // added for resolving the url redirecting issue. It will calculate the value like this 1*10-10 Added on 28th Dec, 2013 by Biju
+							$output .= $this->num_tag_open.'<a '.$this->anchor_class.'href="'.$this->base_url.$loop_link.'">'.$loop.'</a>'.$this->num_tag_close;
 						}
 					}
 				}

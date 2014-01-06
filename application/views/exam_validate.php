@@ -1,94 +1,139 @@
-<div data-role="collapsible" data-theme="b" data-content-theme="d" data-collapsed-icon="arrow-d" data-expanded-icon="arrow-u">
-	
-	<h4>Employees</h4>
-	<ul data-role="listview" data-inset="false">
-		
-	<?php 
-		if($rslt >0){
-			foreach ($rslt as $row){
-				$emp_name = $row->first_name;
-				$qdesignerid = $row->qDesignerId;
-				
-				$getexamname['table'] = 'qdesigner';
-				$getexamname['where']['qDesignerId'] = $qdesignerid;
-				$getexamname = getsingle($getexamname);
-				
-				$examname = $getexamname['title'];
-				
-	?>
-		 <table width="100%">
-        <tr>
-          <td > 
-            <div style='padding-left:10px;'><h4><?php echo $emp_name ?></h4></div>
-          </td>
-		<td>	 <a href="#viewexams" data-rel="popup" data-role="button" data-inline="true" data-transition="slideup" data-icon="gear">Completed Exams</a>   
-		
-		<div data-role="popup" id="viewexams" data-theme="d">
-        <ul data-role="listview" data-inset="true" style="min-width:210px;" data-theme="d">
-            <li data-role="divider" data-theme="e">Select an exam</li>
-            <li><a href="#"><?php print $examname; ?></a></li>
-            <!--<li><a href="#">Exam 2</a></li>
-            <li><a href="#">Exam 3</a></li>
-            <li><a href="#">Exam 4</a></li>-->
-        </ul>
+<?php 	
+	$stat = empty($stat)?0:$stat;
+	$emailid = empty($emailid)?0:$emailid;
+	//echo "Num Rows".$total_candcount;	
+	$pagination = $this->pagination->create_links();
+?>
+
+
+
+
+<h2>Exam Summary</h2>
+<p>&nbsp;</p>
+<ul data-role="listview" data-autodividers="true" data-filter="true" data-inset="true" data-count-theme="b">
+	<div align='center' >
+		<div data-role='navbar' >
+			<?php print $pagination; ?>
+		</div>
 	</div>
-		
-		
-		 </td>	
-		</tr>
-		</table>
-		<?php
-			}
-		}
-		else{
-		?>
-		
-		<li><b>No employees are available!!!</b></li>
-			
-		<?php }?>
-   
-	</ul>
-</div>
-
-<div data-role="collapsible" data-theme="b" data-content-theme="d" data-collapsed-icon="arrow-d" data-expanded-icon="arrow-u">
-	<h4>Candidates</h4>
-	<ul data-role="listview" data-inset="false">
-
 	<?php 
-		if($rslt_cand >0){
-			foreach ($rslt_cand as $cand){
-				empty($cand_name)? '' : $cand->first_name;
-	?>
-	
-		<li><?php print $cand_name?></li>	
+		foreach($results as $row){
+			$userid = $row->candidate_id;
+			$qDesignerId = $row->qDesignerId;
+			$firstname = ucfirst($row->first_name);
+			$subject = ucfirst($row->title);
+			$scheduled_date = $row->scheduled_date;
+			$exam_status = $row->c_status;
 		
-		<?php
+			
+			// for getting the score card details
+
+			$getscoredetail['table'] = 'scorecard';
+			$getscoredetail['where']['user_id'] = $userid;
+			$getscoredetail['where']['typeid'] = 2;
+			$getscoredetail['where']['examid'] = $qDesignerId;
+			$getscoredetail = getsingle($getscoredetail);
+			
+			$totalquest = empty($getscoredetail['totalquest'])?0:$getscoredetail['totalquest'];
+			$correctanswer = empty($getscoredetail['correctanswer'])?0:$getscoredetail['correctanswer'];
+			$wronganswer = empty($getscoredetail['wronganswer'])?0:$getscoredetail['wronganswer'];
+			$unanswered = empty($getscoredetail['unanswered'])?0:$getscoredetail['unanswered'];
+			$marks_obtained = empty($getscoredetail['marks_obtained'])?0:$getscoredetail['marks_obtained'];
+			$marks_obtained = $marks_obtained;
+			$totalmark = empty($getscoredetail['totalmark'])?0:$getscoredetail['totalmark'];
+			$totalmark = intval($totalmark);
+			$percentage = empty($getscoredetail['percentage'])?0:$getscoredetail['percentage'];
+			$result = empty($getscoredetail['result'])?'':$getscoredetail['result'];
+			$grade = empty($getscoredetail['grade'])?0:$getscoredetail['grade'];
+			
+			if($exam_status == 0){
+				$exam_status = "Not attended";
 			}
-		}
-		else{
+			elseif($exam_status == 2){
+				$exam_status = "Dropped";
+			}
+			elseif($exam_status == 1 && $result == 'Passed') {
+				$exam_status = "Passed";
+			}
+			elseif($exam_status == 1 && $result == '') {
+				$exam_status = "Awaiting Result";
+			}
+			elseif($exam_status == 1 && $result == 'Failed') {
+				$exam_status = "Failed";
+			}
+			
+						
+			print"<div id='userDet".$userid.$qDesignerId."' data-role='popup' data-overlay-theme='a' data-theme='e' class='ui-content'>";
+	?>
+	<a href="#" data-rel="back" data-role="button" data-theme="a" data-icon="delete" data-iconpos="notext" class="ui-btn-right">Close</a>
+	<div data-role="header" data-theme="a" class="ui-corner-top">
+		<h1>Exam Summary</h1>
+	</div>
+
+	<div data-role="fieldcontain">
+		<?php
+			print"<h4>Name:$firstname</h4>";
+			print"<h4>Exam Name:$subject</h4>";
+			print"<h4>Scheduled Date:$scheduled_date</h4>";
+			print"<h4>Total Questions:$totalquest</h4>";
+			print"<h4>Correct Answers:$correctanswer</h4>";
+			print"<h4>Wrong Answers:$wronganswer</h4>";
+			print"<h4>Unanswered:$unanswered</h4>";
+			print"<h4>Marks Obtained:$marks_obtained</h4>";
+			print"<h4>Total Marks:$totalmark</h4>";
+			print"<h4>Percentage:$percentage</h4>";
+			print"<h4>Result Status:$result</h4>";
+			print"<h4>Grade:$grade</h4>";
 		?>
-		
-		<li><b>No Candidates are available!!!</b></li>
-     
-    <?php }?>
-     
-  </ul>
+	</div>
 </div>
 
-<?php
-	print"<form action='".site_url('manage/do_upload/')."' method='post' enctype='multipart/form-data' data-ajax='false'>
-				<input type='file' name='userfile' size='20' />
-
-					<br /><br />
-
-				<input type='submit' value='upload' />
-
-			</form>
-
-			<div class='progress' style='position:relative; width:400px; border: 1px solid #ddd; padding: 1px; border-radius: 3px;'>
-        <div class='bar' style='background-color: #B4F5B4; width:0%; height:20px; border-radius: 3px;'></div >
-        <div class='percent' style='position:absolute; display:inline-block; top:3px; left:48%;'>0%</div >
+<div data-role="collapsible" data-theme="c" data-content-theme="d">
+	<?php 
+    print "<h4>$firstname<p class='ui-li-aside'><span class='ui-li-count' style='padding:10px;'><strong>$exam_status</strong></span></p> <p class='ui-li-aside'><strong>".$subject."</strong></p></h4>";
+  ?>
+  <div class="ui-grid-b">
+		<div class="ui-block-a">
+			<div class="ui-bar ui-bar-b" style="height:60px">
+				<?php 
+					print"<p><b>Exam Name:</b><span style='padding-left:20px;'>$subject</span></p>";
+					print"<p><b>Scheduled Date:</b><span style='padding-left:20px;'>$scheduled_date</span></p>";
+				?>	
 			</div>
-			<div id='status'></div>";
-			
+		</div>
+    <div class="ui-block-b">
+			<div class="ui-bar ui-bar-b" style="height:60px">
+			<?php
+				print"<p><b>Total Questions:</b><span style='padding-left:20px;'>$totalquest</span></p>";
+				print"<p><b>Correct Answers:</b><span style='padding-left:20px;'>$correctanswer</span></p>";
+				print"<p><b>Wrong Answers:</b><span style='padding-left:20px;'>$wronganswer</span></p>";
+				print"<p><b>Unanswered:</b><span style='padding-left:20px;'>$unanswered</span></p>";	
 			?>
+			</div>
+		</div>
+    <div class="ui-block-c">
+			<div class="ui-bar ui-bar-b" style="height:60px">
+			<?php
+				print"<p><b>Marks Scored:</b><span style='padding-left:20px;'>$marks_obtained</span></p>";
+				print"<p><b>Total Marks:</b><span style='padding-left:20px;'>$totalmark</span></p>";
+				print"<p><b>Percentage:</b><span style='padding-left:20px;'>$percentage <b>%</b></span></p>";
+				print"<p><b>Result Status:</b><span style='padding-left:20px;'>$result</span></p>";
+				print"<p><b>Grade:</b><span style='padding-left:20px;'>$grade</span></p>";
+			?>
+			</div>
+		</div>
+	</div><!-- /grid-b -->
+</div>
+<?php 
+	}
+	print "<div align='center'>";
+	print "<div data-role='navbar'>";
+	print $pagination;
+	print "</div>";
+	print "</div>";
+?>
+
+</ul>
+
+							
+

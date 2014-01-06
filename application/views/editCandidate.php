@@ -14,8 +14,7 @@ $password = empty($editcand['password'])?'':$editcand['password'];
 $firstname = empty($editcand['first_name'])?'':$editcand['first_name'];
 $lastname = empty($editcand['last_name'])?'':$editcand['last_name'];
 $email = empty($editcand['email'])?'':$editcand['email'];
-$country_code = $editcand['country_code'];
-
+$country_code = empty($editcand['country_code'])?'':$editcand['country_code']; 
 ?>
 <div data-role='content'> 
 <?php
@@ -37,13 +36,19 @@ print hidden('cid',intval($cid));
 	<select name="country_code" id="country_code" data-mini="true">
 		
 		<?php
-			$country_list['table']='country';
+			$country_list['table']='countries';
+			$country_list['limit'] = 1000000;
 			$country_list=getrecords($country_list);
+		
 			foreach($country_list['result'] as $cname ){
-				if($cname['code'] == $country_code)
-				print "<option value='".$cname['code']."' selected>".$cname['name']."</option>";
-				else
-				print "<option value='".$cname['code']."'>".$cname['name']."</option>";
+				if($cname['ccode'] == $country_code){
+					$sel = "selected=selected";
+					}
+				else{
+					$sel = "";
+				}
+				print "<option value='".$country_code."' ".$sel.">".$cname['country']."</option>";
+				
 			}
 ?>
 		<!--<option value="IND" >India</option>
@@ -54,5 +59,31 @@ print hidden('cid',intval($cid));
 	</select>
 	<br><br>
 	<div id='editCandResult' class='error'></div>
+	<input value="<?php print $cid;?>" type="hidden" id="cid" name="cid" /> 
   <button type="submit" data-theme="b" data-inline="true" >Save</button>
+  <div data-role="button"  data-inline='true'  data-theme='b' class='deleteCand' id="<?php print $cid; ?>">Inactive</div>
 </div>	
+
+<?php 
+print script();
+?>
+
+$(document).ready(function (){
+	$('.deleteCand').click(function(){
+		var cid = this.id;
+		if(confirm( 'Do you wish to inactive this user ?')){
+		$.post('<?php print site_url("exam/candDelete/")?>',{clkid:cid},function(data){
+			
+			$('.ui-dialog').dialog('close');
+		refreshPage();
+			});
+	
+
+	}	else{
+	$('.ui-dialog').dialog('close'); 
+}
+		});
+	});
+
+
+</script>

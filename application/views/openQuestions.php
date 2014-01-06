@@ -1,14 +1,27 @@
-  
+<p>
+<a href="#"  data-role="button" data-inline="true" id='setOption'>Options</a>
+</p>  
+<p>&nbsp;</p>
 <ul data-role="listview" data-inset='true' data-filter='true' id='questionlistopen'>
 			<?php 
  
 			$op['table']='qBank';
 			$op['where']['status']='open';
 			$op['start']=$start;
-			$op['order']['qBankid']='desc';
+			$op['order']['entrydate']='desc';
 			$op =getrecords($op); 
 			if(!empty($op['result']))
 			foreach($op['result'] as $o){  
+				
+				$image_quest = empty($o['image_questions'])?base_url('images/question.jpg'):base_url('/uploads/questions/imageType/')."/".$o['image_questions'];
+				
+				if($o['category'] == 'Image'){
+					$img = $image_quest;
+				}
+				else{
+					$img = base_url('images/question.jpg');
+				}
+				
 				print "
 <li  id='quest".$o['qBankid']."' >
 <a href='#'  style='padding-top: 0px;padding-bottom: 0px;padding-right: 42px;padding-left: 0px;'  >
@@ -16,10 +29,10 @@
 		<fieldset data-role='controlgroup'>                                                        
 				<input type='checkbox' class='openquestions' name='checkbox-2b' id='checkbox_".$o['qBankid']."' value='".$o['qBankid']."'/>                   
 						<label for='checkbox-2b' style='border-top-width: 0px;margin-top: 0px;border-bottom-width: 0px;margin-bottom: 0px;border-left-width: 0px;border-right-width: 0px;'>
-						<img src='".base_url('images/question.jpg')."' style='float:left;width:80px;height:80px'/>
+						<img src='".$img."' style='float:left;width:80px;height:80px'/>
 						<label  style='float:left;padding:10px 0px 0px 10px;'> 
-								<h3>".truncate($o['question'],80)."</h3> 
-								<p>".$o['questiontype']."</p>
+								<h3>".truncate(ucfirst($o['question']),80)."</h3> 
+								<p>".ucfirst($o['questiontype'])."</p>
 						</label> 
 				</label>
 		</fieldset> 
@@ -79,6 +92,7 @@ print ready($script);
 	<a href="#" data-rel="back" data-role="button" data-theme="a" data-icon="delete" data-iconpos="notext" class="ui-btn-right">Close</a>
 				<ul data-role="listview" data-inset="true" style="min-width:210px;" data-theme="b" data-mini='true'>
 					<li><a href="<?php print site_url('question/form/0');?>" data-rel='dialog' data-mini='true'>Add questions</a></li>
+					<!--<li><a href="<?php //print site_url('question/imageQuestions/0');?>" data-rel='dialog' data-mini='true'>Image  questions</a></li>-->
 					<li><a href="<?php print site_url('question/upload');?>" data-rel='dialog' data-mini='true'>File Upload</a></li> 
 					<li><a href="<?php print site_url('question/bank');?>"  data-mini='true'>Question Bank</a></li> 
 				</ul>
@@ -191,7 +205,9 @@ print ready($script);
 					<?php 
 					
 					$sub['table']='tbl_subject';
+					$sub['limit'] = 100000000;
 					$sub=getrecords($sub);
+				
 					$c=0;
 					foreach($sub['result'] as $s){
 						$c++;
@@ -209,13 +225,13 @@ print ready($script);
 						<div class="ui-block-a">
 				<fieldset data-role="controlgroup" data-type="horizontal" data-mini="true">
 				<legend>Select subjects:</legend>
-				<input type="radio" name="subject_id_<?php print $c;?>" id="radio-choice-c" value="<?php print $s['n_subjectid'];?>"/>
-				<label for="radio-choice-c">YES</label>
-				<input type="radio" name="subject_id_<?php print $c;?>" id="radio-choice-d" value="0" />
-				<label for="radio-choice-d">NO</label> 
+				 
+				<input type="checkbox" name="subject_id[]" id="radio-choice-c_<?php print $c;?>" value="<?php print $s['n_subjectid'];?>"/>
+				<label for="radio-choice-c_<?php print $c;?>">YES</label>
+			
 				</fieldset>
 
-							</div>	<div class="ui-block-b" style='padding:10px;'> <?php print $s['c_subject'];?></div></div>
+							</div>	<div class="ui-block-b" style='padding:10px;'> <?php print ucfirst($s['c_subject']);?></div></div>
 						</li>
 						 <?php } ?>
 						 
@@ -263,11 +279,16 @@ $script="
 				} 
 				$('#quesCount').html(quCount);
 				$('#selected_questions').val(questionsArray.toString());
+				var qval = questionsArray.toString();
 				$('#selected_questions_delete').val(questionsArray.toString());
 				// alert(questionsArray.toString());
 				});
 				$('#setOption').click(function(){
+					if(questionsArray.toString() == ''){
+						alert('Please select a question atleast !!!! ');}
+						else{
 				$( '#popupAssign' ).popup( 'open' );
+			}
 				}); 
 ";
 

@@ -83,7 +83,7 @@ Class Login_db extends CI_Model
 	function get_empusername($empid)
 	{
 
-		$query = $this->db->query("SELECT username FROM tbl_staffs where staff_id='".$empid."'");
+		$query = $this->db->query("SELECT username,first_name,last_name FROM tbl_staffs where staff_id='".$empid."'");
 
 		$query -> num_rows();
 
@@ -92,10 +92,11 @@ Class Login_db extends CI_Model
 			   foreach ($query->result() as $row)
 			   {
 				   $username=$row->username;
+				   $name=$row->first_name." ".$row->last_name;
 			   }
 			}
-			if(!empty($username)){
-				return $username;
+			if(!empty($name)){
+				return $name;
 			} 
 	}	
 }

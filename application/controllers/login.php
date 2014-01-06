@@ -29,10 +29,10 @@ class Login extends CI_Controller {
 		$username = $this->input->post('username');
 		
 		//query the database
-		$sql="SELECT username,password FROM tbl_staffs WHERE username='$username' AND PASSWORD='$password'";
+		$sql="SELECT username,password FROM tbl_staffs WHERE username='".$username."' AND PASSWORD='".$password."'";
 		$result = $this->login_db->get_results($sql);
 		
-		$sql="SELECT username,password FROM candidate WHERE username='$username' AND PASSWORD='$password'";
+		$sql="SELECT username,password FROM candidate WHERE username='".$username."' AND PASSWORD='".$password."'";
 		$result_cand = $this->login_db->get_results($sql);
 				
 		if($result)

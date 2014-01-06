@@ -5,202 +5,128 @@
 class Common_model extends CI_Model {
 
 
+	function __construct()
+	{
+		parent::__construct();
+	}
 
-function __construct()
+	function getrecords($param){  
 
-{
+		/**
+		* $passingarray['table']='global_settings';
+		* getrecords($passingarray);
+	
+		* function accepts an  array of parameters.
+	
+		*   1 . ['table']  
 
-parent::__construct();
+		*   2. ['where'] condition as an array .. eg: $parama['where']['tableid']=1,$parama['where']['name']='wizbiz',
+	
+		*   3. ['limit'] is optional and is set from condig table as default
 
-}
+		*   4.['start'] is optional and is set as 0 as default
 
+		*/
+		/*
+		*/
 
+		if(!empty($param['join'])){  $param['jointype']=empty($param['jointype'])? 'left outer':$param['jointype'];
+			foreach($param['join'] as $k=>$v) 
+				$this->db->join($k,$v,$param['jointype']);
+		}
+		$param['limit']=empty($param['limit'])? 20 : intval($param['limit']);
 
+		if(intval($param['limit'])<1)
+			$param['limit']=1000000000;
 
-function getrecords($param){  
+		$param['start']=empty($param['start'])? 0 : intval($param['start']);
 
+		if(! empty($param['select']))
+			$this->db->select($param['select']);
 
+		$param['table']=$param['table']; 
 
-/**
- * $passingarray['table']='global_settings';
- * getrecords($passingarray);
+		if(!empty($param['where']))   
 
-* function accepts an  array of parameters.
-
-*   1 . ['table']  
-
-*   2. ['where'] condition as an array .. eg: $parama['where']['tableid']=1,$parama['where']['name']='wizbiz',
-
-*   3. ['limit'] is optional and is set from condig table as default
-
-*   4.['start'] is optional and is set as 0 as default
-
-*/
-/*
-*/
-
-
-
- 
-if(!empty($param['join'])){  $param['jointype']=empty($param['jointype'])? 'left outer':$param['jointype'];
-  foreach($param['join'] as $k=>$v) 
-  $this->db->join($k,$v,$param['jointype']);
-   }
-
-
-
-
-
-$param['limit']=empty($param['limit'])? 20 : intval($param['limit']);
-
-if(intval($param['limit'])<1)
-$param['limit']=1000000000;
-
-$param['start']=empty($param['start'])? 0 : intval($param['start']);
-
-if(! empty($param['select']))
-$this->db->select($param['select']);
-
-
-$param['table']=$param['table']; 
-
- 
-
-if(!empty($param['where']))   
-
-$this->db->where($param['where']); 
-
- 
-
+			$this->db->where($param['where']); 
   
+		if(!empty($param['wherein'])){
+			foreach($param['wherein'] as $k=>$v)
+				$this->db->where_in($k,$v);
+		}
 
-if(!empty($param['wherein'])){
-foreach($param['wherein'] as $k=>$v)
-$this->db->where_in($k,$v);
+		if(!empty($param['orwherein'])){
+			foreach($param['orwherein'] as $k=>$v)
+				$this->db->or_where_in($k,$v);
+		}
+		$ap='';
 
-}
+		if(!empty($param['orwhere']))
+			$this->db->or_where($param['orwhere'] );
+			$ap='';
+			if(!empty($param['wherenotin'])){  
+				foreach($param['wherenotin'] as $k=>$v)
+					$ap .= empty($ap)? $v:','.$v;
+					$this->db->where_not_in($k,$ap); 
+			} 
+			$ap='';
+			if(!empty($param['orwherenotin'])){  
+				foreach($param['orwherenotin'] as $k=>$v)
+					$ap .= empty($ap)? $v:','.$v;
+					$this->db->or_where_not_in($k,$ap);  
+			}  
 
+			if(!empty($param['like']))
+				$this->db->like($param['like']); 
+			if(!empty($param['orlike']))
+				$this->db->or_like($param['orlike']); 
 
-if(!empty($param['orwherein'])){
-foreach($param['orwherein'] as $k=>$v)
-$this->db->or_where_in($k,$v);
+			if(!empty($param['notlike']))
+				$this->db->not_like($param['notlike']); 
 
-}
+			if(!empty($param['ornotlike']))
+				$this->db->or_not_like($param['ornotlike']); 
 
-
-
-$ap='';
-
-
-if(!empty($param['orwhere']))
-$this->db->or_where($param['orwhere'] );
-
-
-
-
-
-$ap='';
-if(!empty($param['wherenotin'])){  
-foreach($param['wherenotin'] as $k=>$v)
-$ap .= empty($ap)? $v:','.$v;
-$this->db->where_not_in($k,$ap); 
-
-} 
-
-
-$ap='';
-if(!empty($param['orwherenotin'])){  
-foreach($param['orwherenotin'] as $k=>$v)
-$ap .= empty($ap)? $v:','.$v;
-$this->db->or_where_not_in($k,$ap);  
-}  
-
-
-
-
-
-
-if(!empty($param['like']))
-$this->db->like($param['like']); 
-
-if(!empty($param['orlike']))
-$this->db->or_like($param['orlike']); 
-
-if(!empty($param['notlike']))
-$this->db->not_like($param['notlike']); 
-
-if(!empty($param['ornotlike']))
-$this->db->or_not_like($param['ornotlike']); 
-
-
-
-
-
-
-
-if(!empty($param['order']))   {
-
-
-
-foreach($param['order'] as $k => $v )
-
-$this->db->order_by($k,$v); 
-
-}else 
-  if ($this->db->field_exists('name',$param['table'])) 
-$this->db->order_by('name','asc');  
-   if ($this->db->field_exists('title',$param['table'])) 
-$this->db->order_by('title','asc');  
+			if(!empty($param['order']))   {
+				foreach($param['order'] as $k => $v )
+					$this->db->order_by($k,$v); 
+			}else 
+				if ($this->db->field_exists('name',$param['table'])) 
+					$this->db->order_by('name','asc');  
+				if ($this->db->field_exists('title',$param['table'])) 
+					$this->db->order_by('title','asc');  
    
+				if(!empty($param['group']))
+					$this->db->group_by($param['group']); 
+
+				$this->db->limit(intval($param['limit']),intval($param['start']));
+
+				$query = $this->db->get($param['table']); 
+
+				$data['result']=$query->result_array();   
+				/*
+				echo $this->db->last_query();  
+				*/
+		return $data;
+	}
+	function getsingle($param){  
 
 
-if(!empty($param['group']))
-$this->db->group_by($param['group']); 
+	/**
+	* $passingarray['table']='global_settings';
+	* getrecords($passingarray);
 
+	* function accepts an  array of parameters.
 
+	*   1 . ['table']  
+	
+	*   2. ['where'] condition as an array .. eg: $parama['where']['tableid']=1,$parama['where']['name']='wizbiz',
 
+	*   3. ['limit'] is optional and is set from condig table as default
 
+	*   4.['start'] is optional and is set as 0 as default
 
-
-
-
-$this->db->limit(intval($param['limit']),intval($param['start']));
-
-
-
-$query = $this->db->get($param['table']); 
-
-
-
-$data['result']=$query->result_array();   
-
-
-/*
-echo $this->db->last_query();  
-*/
-
-return $data;
-
-}
-function getsingle($param){  
-
-
-
-/**
- * $passingarray['table']='global_settings';
- * getrecords($passingarray);
-
-* function accepts an  array of parameters.
-
-*   1 . ['table']  
-
-*   2. ['where'] condition as an array .. eg: $parama['where']['tableid']=1,$parama['where']['name']='wizbiz',
-
-*   3. ['limit'] is optional and is set from condig table as default
-
-*   4.['start'] is optional and is set as 0 as default
-
-*/
+	*/
 
 
 
@@ -390,9 +316,16 @@ function update($param)
 
 {
 
-
+if(!empty($param['where']))  
 
 $this->db->where($param['where']); 
+
+
+if(!empty($param['wherein'])){
+foreach($param['wherein'] as $k=>$v)
+$this->db->where_in($k,$v);
+
+}
 
 return $this->db->update($param['table'],$param['data']); 
 
@@ -479,7 +412,86 @@ foreach ($fields as $field)
 } 
 }
 
+// Function for getting count of a table
 
+public function cand_record_count(){
+	$this->db->select('*');
+	$this->db->from('candidate');
+	$this->db->join('assigned_users','assigned_users.user_id = candidate.candidate_id');
+	$this->db->join('qdesigner','qdesigner.qDesignerId = assigned_users.qid');
+	return $this->db->count_all_results();
+	}
+
+// for getting candidate who are assigned for exams
+public function get_assigned_cand($limit,$start){
+	
+	$this->db->limit($limit, $start);
+	$this->db->select('*');
+	$this->db->from('candidate');
+	$this->db->join('assigned_users','assigned_users.user_id = candidate.candidate_id');
+	$this->db->join('qdesigner','qdesigner.qDesignerId = assigned_users.qid');
+	$query = $this->db->get();
+	if($query->num_rows() > 0){
+		foreach($query->result() as $row){
+			$data[] = $row;
+		}
+		return $data;
+	}
+	return false;
+}
+
+public function get_table_records($tbl_name,$limit,$start,$p1,$desc){
+	$this->db->limit($limit,$start);
+	$this->db->order_by($p1,$desc);
+	$query = $this->db->get($tbl_name);
+	if($query->num_rows() > 0){
+		foreach($query->result() as $row){
+			$data[] = $row;
+		}
+		return $data;
+	}
+	return false;
+}
+
+public function record_count($tbl_name){
+	$total_rows = $this->db->count_all_results($tbl_name);
+	return $total_rows;
+}
+
+
+// for getting the 
+public function get_record_groupby($tbl_name,$tbl_name1,$id,$id1,$groupby){
+	$this->db->group_by($groupby); 
+	$this->db->select('*');
+	$this->db->from($tbl_name);
+	if($tbl_name1 != '' and $id != '' and $id1 != ''){
+	$this->db->join($tbl_name1,$tbl_name.'.'.$id.'=' .$tbl_name1.'.'.$id1);
+	}
+	$query = $this->db->get();
+	if($query->num_rows() > 0){
+		foreach($query->result() as $row){
+			$data[] = $row;
+		}
+		return $data;
+	}
+	return false;
+}
+
+public function get_record_where($tbl_name,$id,$value){
+	if($value != ''){
+		$query = $this->db->get_where($tbl_name,array($id=>$value));
+	}
+	else{
+		$query = $this->db->get($tbl_name);
+	}
+		if($query->num_rows() > 0){
+			foreach($query->result() as  $row){
+				$data[] =$row;
+			}
+			return $data;
+		}
+		return false;
+	}
 
 }
 
