@@ -739,7 +739,7 @@ $config['first_link'] = 'First';
 
 $config['uri_segment'] = $this->uri->segment(7);
 $config['use_page_numbers'] = FALSE;
-$config['num_links'] = 5;
+$config['num_links'] = 75;
 $config['last_link'] = 'Last';
 $config['next_link'] = '&gt;';
 $config['prev_link'] = '&lt;';
