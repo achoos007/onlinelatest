@@ -460,12 +460,29 @@ public function record_count($tbl_name){
 
 
 // for getting the 
-public function get_record_groupby($tbl_name,$tbl_name1,$id,$id1,$groupby){
-	$this->db->group_by($groupby); 
-	$this->db->select('*');
+public function get_record_groupby($tbl_name,$join,$groupby,$where,$limit,$start,$select=""){
+	if($groupby != ''){
+		$this->db->group_by($groupby); 
+	}
+	if(($limit != '') and ($start != '')){
+		$this->db->limit($limit,$start);
+	}
+	if(empty($select)){
+		$this->db->select('*');
+	}
+	else{
+		$elements = implode(",",$select);
+		$this->db->select($elements);
+	}
 	$this->db->from($tbl_name);
-	if($tbl_name1 != '' and $id != '' and $id1 != ''){
-	$this->db->join($tbl_name1,$tbl_name.'.'.$id.'=' .$tbl_name1.'.'.$id1);
+	if(!empty($join)){
+		$this->db->join($join['tbl_1'],$tbl_name.'.'.$join['p1'].'=' .$join['tbl_1'].'.'.$join['p2'],'left');
+	}
+	if(!empty($join['tbl_2'])){
+		$this->db->join($join['tbl_2'],$join['tbl_1'].'.'.$join['p3'].'=' .$join['tbl_2'].'.'.$join['p4'],'left');
+	}
+	if(!empty($where)){
+		$this->db->where($where);
 	}
 	$query = $this->db->get();
 	if($query->num_rows() > 0){
@@ -474,7 +491,7 @@ public function get_record_groupby($tbl_name,$tbl_name1,$id,$id1,$groupby){
 		}
 		return $data;
 	}
-	return false;
+	return false;  // for an empty array its value return as 1
 }
 
 public function get_record_where($tbl_name,$id,$value){
