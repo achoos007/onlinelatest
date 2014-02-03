@@ -25,7 +25,7 @@ class Subjects extends CI_Controller {
 		$this->pagination->initialize($config);
 		$page = ($this->uri->segment(3)) ? $this->uri->segment(3) : 0;
 		
-		$data['results'] = $this->common_model->get_table_records('tbl_subject',$config['per_page'],$page,'d_date','DESC');
+		$data['results'] = $this->common_model->get_table_records('tbl_subject',$config['per_page'],$page,'d_date','DESC','');
 
 		$data['main']['subjectList']['title']="Subjects List"; 
 		$data['main']['subjectList']['right']['url']=site_url("subjects/form"); 

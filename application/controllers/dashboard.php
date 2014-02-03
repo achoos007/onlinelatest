@@ -14,7 +14,8 @@ class Dashboard extends CI_Controller {
 
 		$this->menu="home";
 		$this->title="home";
-
+		
+		$data['today'] = $today = strtotime(date("Y-m-d H:i:s"));  
 
 		// Get exams
 		
@@ -61,6 +62,9 @@ class Dashboard extends CI_Controller {
 		$gettopresultemp = $this->db->query("select * from scorecard as a, tbl_staffs as b, qdesigner as c where a.typeid=1 and a.user_id=b.staff_id and a.examid=c.qDesignerId order by a.percentage DESC LIMIT 0,3");
 		$data['gettopresultemp'] = $gettopresultemp;
 		
+		$get_req_exams = $this->db->query("SELECT a.title,a.qDesignerId,b.user_id FROM  qdesigner as a join assigned_users as b  on a.qDesignerId = b.qid WHERE b.c_status=3 and b.start_date <=".$today." and b.end_date >=".$today." Group By title" );
+		$data['get_req_exams'] = $get_req_exams;
+		
 		
 		$data['main']['dashboard']['title']=	"Dashboard"; 
 		$data['main']['dashboard']['page']=		$this->load->view("dashboard",$data,TRUE); 
@@ -70,6 +74,27 @@ class Dashboard extends CI_Controller {
 		$this->load->view("theme/footer",$data);
 
 	}
+	function approve_emp_exam(){
+		
+		$count = 0;
+		$qid = $this->input->post('qid');
+		$staff_id = $this->input->post('staff_id');		
+		//print "Staff Id".$staff_id;
+		//print "Question ID".$qid;
+		$approve_exam['table'] = 'assigned_users';
+		$approve_exam['where']['qid'] = $qid;
+		$approve_exam['where']['user_id'] = $staff_id;
+		$approve_exam['where']['c_status'] = '3';
+		$count = total_rows($approve_exam);
+		
+		
+		if($count > 0){
+			$approve_exam['data']['c_status'] = '0';
+			//update($approve_exam);
+			print "Exam approved successfully";
+		}
+	}
+	
 }
 
 /* End of file dashboard.php */

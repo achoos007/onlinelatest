@@ -44,7 +44,7 @@ class Exam extends CI_Controller {
 
 		if($roleid==0){
 			$config['total_rows'] = $data['total_rows'];
-			$data['results'] = $this->common_model->get_table_records('qdesigner',$config['per_page'],$page,'entrydate','DESC');
+			$data['results'] = $this->common_model->get_table_records('qdesigner',$config['per_page'],$page,'entrydate','DESC','');
 			$data['main']['open_question_list']['right']['text'] = "Create Question Papers";
 			$data['main']['open_question_list']['right']['url'] = site_url("exam/form");
 			
@@ -86,6 +86,46 @@ class Exam extends CI_Controller {
 		$this->load->view("theme/header", $data);
 		$this->load->view("theme/index", $data);
 		$this->load->view("theme/footer", $data);
+	}
+	
+	function req_exam(){
+		
+		
+		$this->load->library('pagination'); // for loading pagination 
+		$this->load->helper('date');
+		$userid =  $this->session->userdata('userid');
+		$datestring = "%Y-%m-%d-%H-%i-%s";
+		$time = time();
+		$data['today'] = mdate($datestring, $time);
+		
+		$data['total_rows'] = $this->common_model->record_count('qdesigner');
+		
+		$config['base_url'] = site_url('exam/req_exam');
+		$config['per_page'] = 10;
+		$page = ($this->uri->segment(3)) ? $this->uri->segment(3) : 0;
+		
+
+			$config['total_rows'] = $data['total_rows'];
+			//$select = array('qdesigner.title','qdesigner.qDesignerId');
+			//$data['results'] = $this->common_model->get_table_records('qdesigner',$config['per_page'],$page,'entrydate','DESC',$select);
+			
+			$query = $this->db->query("SELECT qdesigner.title,qdesigner.qDesignerId FROM qdesigner WHERE qdesigner.qDesignerId NOT IN (select qid from assigned_users,tbl_staffs where assigned_users.user_id = tbl_staffs.staff_id and tbl_staffs.staff_id=".$userid." and assigned_users.c_status!=3) LIMIT ".$page.",".$config['per_page']);
+			
+			if($query->num_rows() > 0){
+				$data['results'] = $query->result();
+				
+			}
+			
+			
+			$this->pagination->initialize($config);
+
+		
+		$data['main']['req_an_exam']['title'] = "Request An Exam";	
+		$data['main']['req_an_exam']['page'] = $this->load->view("requestExam",$data,TRUE);
+		
+		$this->load->view("theme/header",$data);
+		$this->load->view("theme/index",$data);
+		$this->load->view("theme/footer",$data);
 	}
 
 	function listall() {
@@ -339,9 +379,11 @@ class Exam extends CI_Controller {
 	
 		
 		// for getting employees count
-		$getempcount = "select a.first_name,a.last_name,a.staff_id,b.assign_status,b.scheduled_date,b.c_status,a.photo from tbl_staffs as a  left join assigned_users as b on (a.staff_id = b.user_id and b.qid= ".$data['qid'].") left join tbl_office as c on (a.offc_id = c.office_id) left join countries as d on (c.country = d.cntry_id) where a.status='Active' and d.country = '".$data['cntry_name']."'";
+		$getempcount = "SELECT a.first_name,a.last_name FROM `tbl_staffs` as a join tbl_office as b on a.offc_id = b.office_id join countries as c on b.country = c.cntry_id WHERE b.country=".$cntry_code." and a.status='Active'";
+		
+		//select a.first_name,a.last_name,a.staff_id,b.assign_status,b.scheduled_date,b.c_status,a.photo from tbl_staffs as a  left join assigned_users as b on (a.staff_id = b.user_id and b.qid= ".$data['qid'].") left join tbl_office as c on (a.offc_id = c.office_id) left join countries as d on (c.country = d.cntry_id) where a.status='Active' and d.country = '".$data['cntry_name']."'";
 		$getempcount = $this->db->query($getempcount);
-		$emp_count = $getempcount->num_rows();
+		$data['emp_count'] = $emp_count = $getempcount->num_rows();
 		$config['base_url'] = site_url('exam/assigneelist/'.$uid."/".$qid."/".$cntry_code."/".$cntry_name."/");
 		$config['total_rows'] = $emp_count;
 		$config['per_page'] = 20;
@@ -350,11 +392,15 @@ class Exam extends CI_Controller {
 		
 		 
 		// Getting employees list
-		$getemplist = "select a.first_name,a.last_name,a.staff_id,b.assign_status,b.scheduled_date,b.c_status,a.photo from tbl_staffs as a  left join assigned_users as b on (a.staff_id = b.user_id and b.qid= ".$data['qid'].") left join tbl_office as c on (a.offc_id = c.office_id) left join countries as d on (c.country = d.cntry_id) where a.status='Active' and d.country = '".$data['cntry_name']."' ORDER BY a.first_name ASC LIMIT ".$page.",".$config['per_page'];
+		$data['getemp'] = $getemplist = "SELECT a.first_name,a.last_name,a.staff_id,d.assign_status,d.start_date,d.end_date,d.c_status,a.photo FROM tbl_office as b, countries as c, `tbl_staffs` as a left join assigned_users as d on a.staff_id = d.user_id and d.qid=".$data['qid']." WHERE a.offc_id = b.office_id and b.country=".$cntry_code." and b.country = c.cntry_id  and a.status='Active' ORDER BY a.first_name ASC LIMIT ".$page.",".$config['per_page'];
+		
 		$getemplist = $this->db->query($getemplist);
 		$data['getemplist'] = $getemplist->result();
 		
-	}
+		
+	
+}
+		
 	else{
 		
 			// for getting country name
@@ -365,19 +411,21 @@ class Exam extends CI_Controller {
 		$data['getcountries'] = $getcountries = $this->common_model->get_record_groupby('candidate',$join,$groupby,$where,'','',$select);
 
 		$data['cntry_code'] = $cntry_code;
-		$data['cntry_name'] = $cntry_name;
+		$data['cntry_name'] = urldecode($cntry_name);
 			// for getting employees count
 			$getcandcount = "select * from candidate as a  left join assigned_users as b on (a.candidate_id = b.user_id and b.qid= ".$data['qid'].") left join countries as d on (a.country_code = d.ccode) where a.status='Active' and d.country = '".$data['cntry_name']."'";
 			$getcandcount = $this->db->query($getcandcount);
-			$cand_count = $getcandcount->num_rows();
+			$data['cand_count'] = $cand_count = $getcandcount->num_rows();
 		$config['base_url'] = site_url('exam/assigneelist/'.$uid."/".$qid."/".$cntry_code."/".$cntry_name."/");
 		$config['total_rows'] = $cand_count;
-		$config['per_page'] = 20;
+		$config['per_page'] = 5;
 		$config['uri_segment'] = 7;	
 		$page = ($this->uri->segment(7)) ? $this->uri->segment(7) : 0;
 		
 		
-		$getcandlist = "select * from candidate as a  left join assigned_users as b on (a.candidate_id = b.user_id and b.qid= ".$data['qid'].") left join countries as d on (a.country_code = d.ccode) where a.status='Active' and d.country = '".$data['cntry_name']."' ORDER BY a.first_name ASC LIMIT ".$page.",".$config['per_page'];
+		$getcandlist = "SELECT a.first_name,a.last_name,a.candidate_id,d.assign_status,d.start_date,d.end_date,d.c_status FROM countries as c, `candidate` as a left join assigned_users as d on a.candidate_id = d.user_id and d.qid=".$data['qid']." WHERE c.country='".$data['cntry_name']."' and a.status='Active' ORDER BY a.first_name ASC LIMIT ".$page.",".$config['per_page'];
+		
+		//select * from candidate as a  left join assigned_users as b on (a.candidate_id = b.user_id and b.qid= ".$data['qid'].") left join countries as d on (a.country_code = d.ccode) where a.status='Active' and d.country = '".$data['cntry_name']."' ORDER BY a.first_name ASC LIMIT ".$page.",".$config['per_page'];
 		
 		$getcandlist = $this->db->query($getcandlist);
 		$data['getcandlist'] = $getcandlist->result();
@@ -396,10 +444,14 @@ class Exam extends CI_Controller {
 		
     //$data['assignid'] = intval($assignid);
     $data['assigneeid']=intval($this->input->post('assigneeid'));
+    $data['main']['open_question_list']['back'] = 1;
     $data['main']['open_question_list']['right']['text'] = "Previous Question Papers";
     $data['main']['open_question_list']['right']['url'] = site_url("exam/designer");
     $data['main']['open_question_list']['title'] = $title;
-    $data['main']['open_question_list']['page'] = $this->load->view("assigneelist", $data, TRUE);
+    if($uid == 1)
+			$data['main']['open_question_list']['page'] = $this->load->view("assigneelist", $data, TRUE);
+    else
+			$data['main']['open_question_list']['page'] = $this->load->view("assigneelist_cand", $data, TRUE);
 
     $this->load->view("theme/header", $data);
     $this->load->view("theme/index", $data);
@@ -864,7 +916,7 @@ class Exam extends CI_Controller {
 			$exist['table']='qexam';
 			$exist['where']['qDesignerId']=$data['examid'];
 			$exist=getsingle($exist);
-			$data['exits']=$exits['qDesignerId'];
+			$data['exits']=empty($exits['qDesignerId'])?0:$exits['qDesignerId'];
 			if(empty($exist)){
 				foreach($qarray as $type=>$mode){
 					foreach($mode as $m=>$count){
@@ -889,6 +941,12 @@ class Exam extends CI_Controller {
 					$insert['data']['entrydate']=entrydate();  
 					$insert['data']['qDesignerId']=$data['examid'];
 					insert($insert);
+					
+					// for updating status in exam designer (qDesigner) table
+					$update_stat['table']='qdesigner';
+					$update_stat['where']['qDesignerId']=$data['examid'];
+					$update_stat['data']['status']=2; // 2 denotes this exam is excecuted and ready for assigning
+					update($update_stat);
 				}
 				$data['quest']=serialize($questions);	  
 			}
@@ -1230,29 +1288,40 @@ class Exam extends CI_Controller {
 	}
 	
 	function loadmore(){
+	
+	$countryname = $this->input->post('countryname');
+	$qid = $this->input->post('qid');
+	
+	$start=$this->session->userdata('q_emp_start')+20;
+	$this->session->set_userdata('q_emp_start',$start);
+	$limit = 20;
+	$getemplist = "select a.staff_id, a.first_name,a.last_name,a.staff_id,a.photo from tbl_staffs as a  left join tbl_office as c on (a.offc_id = c.office_id) left join countries as d on (c.country = d.cntry_id) where d.country = '".$countryname."' ORDER BY a.staff_id DESC LIMIT ".$start.",".$limit;
+		$getemplist = $this->db->query($getemplist);
+		$getemplist = $getemplist->result();
 		
 	$op['table']='tbl_staffs';
-	$op['start']=$this->session->userdata('q_emp_start')+20;
-	$this->session->set_userdata('q_emp_start',$op['start']);
+
 	$op['order']['first_name']='ASC';
-	$op =getrecords($op);   
+	$op =getrecords($op);  
+	
+	 
 	$list='';
-	if(!empty($op['result']))
-		foreach($op['result'] as $o){  
-				$str = ucfirst(strtolower($o['first_name'])) . "&nbsp;" . ucfirst(strtolower($o['last_name']));
+	if(!empty($getemplist))
+		foreach($getemplist as $o){  
+				$str = ucfirst(strtolower($o->first_name)) . "&nbsp;" . ucfirst(strtolower($o->last_name));
 				/*$list .= "<fieldset data-role='controlgroup'>
 					  <label><input name='checkbox".$o['staff_id']."' id='checkbox".$o['staff_id']."' value=".$o['staff_id']."  class='empnames' type='checkbox'>".$str."</label>
 						</fieldset>";*/
-					$img_url = 'http://198.1.110.184/~geniuste/gg/'.$o['photo'];
+					$img_url = 'http://198.1.110.184/~geniuste/gg/'.$o->photo;
 						//$img_url = '';
-						$img = empty($o['photo'])? base_url('images/cands.jpg') : $img_url;		
+						$img = empty($o->photo)? base_url('images/cands.jpg') : $img_url;		
 				$list .= "
-				<li  id='emp".$o['staff_id']."' >
+				<li  id='emp".$o->staff_id."' >
 					<a href='#'  style='padding-top: 0px;padding-bottom: 0px;padding-right: 42px;padding-left: 0px;'  >
 					<label style='border-top-width: 0px;margin-top: 0px;border-bottom-width: 0px;margin-bottom: 0px;border-left-width: 0px;border-right-width: 0px;' data-corners='false'>
 					<fieldset data-role='controlgroup'>                                                        
-						<input type='checkbox' name='checkbox-2b' id='checkbox_".$o['staff_id']."'  class='empnames' value='".$o['staff_id']."'  />                   
-						<label for='checkbox_".$o['staff_id']."' style='border-top-width: 0px;margin-top: 0px;border-bottom-width: 0px;margin-bottom: 0px;border-left-width: 0px;border-right-width: 0px;'>
+						<input type='checkbox' name='checkbox-2b' id='checkbox_".$o->staff_id."'  class='empnames' value='".$o->staff_id."'  />                   
+						<label for='checkbox_".$o->staff_id."' style='border-top-width: 0px;margin-top: 0px;border-bottom-width: 0px;margin-bottom: 0px;border-left-width: 0px;border-right-width: 0px;'>
 							<img src='".$img."' style='float:left;width:80px;height:80px' />
 							<label  style='float:left;padding:2px;'> 
 								<h3>".$str."</h3>
@@ -1273,8 +1342,8 @@ class Exam extends CI_Controller {
 		function loadmorecand(){
 		
 	$op['table']='candidate';
-	$op['start']=$this->session->userdata('q_emp_start')+20;
-	$this->session->set_userdata('q_emp_start',$op['start']);
+	$op['start']=$this->session->userdata('q_cand_start')+20;
+	$this->session->set_userdata('q_cand_start',$op['start']);
 	$op['order']['first_name']='ASC';
 	$op =getrecords($op);   
 	$list='';
@@ -1316,25 +1385,33 @@ class Exam extends CI_Controller {
 	$this->load->library('form_validation');
 	//$this->form_validation->set_rules('subject_id_', 'Please select an Item', 'required');
 	
+	
 	$empids=explode(',',$this->input->post('selected_emp'));
 	$fromdatetime= $this->input->post('from_year')."-".$this->input->post('from_month')."-".$this->input->post('from_day')." ".$this->input->post('from_hour').":".$this->input->post('from_minute').":".$this->input->post('fromsec');
 	$todatetime= $this->input->post('to_year')."-".$this->input->post('to_month')."-".$this->input->post('to_day')." ".$this->input->post('to_hour').":".$this->input->post('to_minute').":".$this->input->post('tosec');
 	$examid = $this->input->post('qid');
 	$type = $this->input->post('uid');
+	$request = $this->input->post('request');
+	$request = empty($request)?'':$request;
 	$entrydate=entrydate();
 	$start_date = entrydate($fromdatetime);
 	$end_date = entrydate($todatetime);
 	//print_r($questions);
-
-	//$total=$this->input->post('subtotal');
-	//$sub=implode(",",$this->input->post('subject_id')); 
-	//print $sub;
-
+	
+	if($fromdatetime == $todatetime){
+		print "<p style='color:red'><b>Both date and time are same. Please change it !!!</b></p>";
+	}
+	else{
 	foreach($empids as $emp){
 		$ins['table']='assigned_users';
 		$ins['where']['user_id']=$emp;
 		$ins['where']['qid']=$examid;
-		$count=  total_rows($ins);
+		$count = total_rows($ins);
+		
+		$getqid['table'] = 'qdesigner';
+		$getqid['where']['qDesignerId'] = $examid;
+		$getqid = getsingle($getqid);
+		$title = $getqid['title'];
 		
 		/* $ins['data']['n_subjectid']=$sub;
 		$ins['data']['entrydate']=entrydate();
@@ -1346,13 +1423,18 @@ class Exam extends CI_Controller {
 			$update['where']['user_id']=$emp;
       $update['where']['qid']=$examid;
       $update['data']['assign_status']='Active';
+      if($request == 3){
+      $update['data']['c_status']=3;
+			}
+			else{
       $update['data']['c_status']=0;
+			}
       $update['data']['type']=$type;
       $update['data']['entrydate']=$entrydate;
       $update['data']['start_date']=$start_date;
       $update['data']['end_date']=$end_date;
       $result = update($update);
-      //print "<b>".$username ."</b>&nbsp; has been removed from <b>".$title."</b> exam";
+    
       //print "Date Updated".ready('setTimeout("refreshPage()",1000);');
 			
 		}
@@ -1360,16 +1442,29 @@ class Exam extends CI_Controller {
 			$update['data']['user_id']=$emp;
       $update['data']['qid']=$examid;
       $update['data']['assign_status']='Active';
+      if($request == 3){
+      $update['data']['c_status']=3;
+			}
+			else{
       $update['data']['c_status']=0;
+			}
       $update['data']['type']=$type;
       $update['data']['entrydate']=$entrydate;
       $update['data']['start_date']=$start_date;
       $update['data']['end_date']=$end_date;
       $result = insert($update);
-      //print "<b>".$username."</b>&nbsp; has been sucessfully added to <b>".$title."</b> exam";
+      //print "Sucessfully added to <b>".$title."</b> exam";
       //print "Date Scheduled".ready('setTimeout("refreshPage()",1000);');
 		}
 	}
+	
+	if($count >0){
+		 print "Users have been successfully reschedule for the <b>".$title."</b> exam";
+	}
+	else{
+		  print "Users have been successfully scheduled for the <b>".$title."</b> exam";
+	}
+}
 	//print "From Date".entrydate($fromdatetime);
 	//print "To Date".entrydate($todatetime);
 	//print "Exam Id".$examid;
@@ -1408,12 +1503,20 @@ class Exam extends CI_Controller {
 	//$total=$this->input->post('subtotal');
 	//$sub=implode(",",$this->input->post('subject_id')); 
 	//print $sub;
-
+	if($fromdatetime == $todatetime){
+		print "<p style='color:red'><b>Both date and time are same. Please change it !!!</b></p>";
+	}
+	else{
 	foreach($candids as $cand){
 		$ins['table']='assigned_users';
 		$ins['where']['user_id']=$cand;
 		$ins['where']['qid']=$examid;
 		$count=  total_rows($ins);
+		
+		$getqid['table'] = 'qdesigner';
+		$getqid['where']['qDesignerId'] = $examid;
+		$getqid = getsingle($getqid);
+		$title = $getqid['title'];
 		
 		/* $ins['data']['n_subjectid']=$sub;
 		$ins['data']['entrydate']=entrydate();
@@ -1444,11 +1547,21 @@ class Exam extends CI_Controller {
       $update['data']['entrydate']=$entrydate;
       $update['data']['start_date']=$start_date;
       $update['data']['end_date']=$end_date;
+      print_r($update);
       $result = insert($update);
       //print "<b>".$username."</b>&nbsp; has been sucessfully added to <b>".$title."</b> exam";
       //print "Date Scheduled".ready('setTimeout("refreshPage()",1000);');
 		}
 	}
+	
+	if($count >0){
+		 print "Users have been successfully reschedule for the <b>".$title."</b> exam";
+	}
+	else{
+		  print "Users have been successfully scheduled for the <b>".$title."</b> exam";
+	}
+}
+	
 	//print "From Date".entrydate($fromdatetime);
 	//print "To Date".entrydate($todatetime);
 	//print "Exam Id".$examid;
@@ -1461,8 +1574,159 @@ class Exam extends CI_Controller {
 	}
 	
 	
+	function scroll_emp(){
+	
+	$list ="";
+		if($_POST)
+	{
+		//sanitize post value
+		$group_number = filter_var($_POST["group_no"], FILTER_SANITIZE_NUMBER_INT, FILTER_FLAG_STRIP_HIGH);
+		$cntry_code = $this->input->post('countrycode');
+		$qid = $this->input->post('qid');
+
+	//throw HTTP error if group number is not valid
+	if(!is_numeric($group_number)){
+		header('HTTP/1.1 500 Invalid number!');
+		exit();
+	}
+	$items_per_group = 5;
+	//get current starting point of records
+	$position = ($group_number * $items_per_group);
+	
+	//Limit our results within a specified range. 
+	$getemplist = "SELECT a.first_name,a.last_name,a.staff_id,d.assign_status,d.start_date,d.end_date,d.c_status,a.photo FROM tbl_office as b, countries as c, `tbl_staffs` as a left join assigned_users as d on a.staff_id = d.user_id and d.qid=".$qid." WHERE a.offc_id = b.office_id and b.country=".$cntry_code." and b.country = c.cntry_id  and a.status='Active' ORDER BY a.first_name ASC LIMIT ".$position.",".$items_per_group;
+
+	$getemplist = $this->db->query($getemplist);
+	$result = $getemplist->result();
+	$check = "check"; 
+	if(!empty($result))  
+		//output results from database
+		
+		foreach($result as $obj)
+		{
+			$start_date = empty($row->start_date)?'':dateformat($row->start_date,'d/m/Y H:i a');
+			$end_date = empty($row->end_date)?'':dateformat($row->end_date,'d/m/Y H:i a');
+						
+			$scheduled_date = empty($start_date)?"":"Exam scheduled from <strong>".$start_date. "</strong> to <strong>".$end_date."</strong>";
+					
+			$assign_status=$row->assign_status;
+				
+			if($assign_status == 'Active')
+				$status_val='Exam Scheduled';
+			else
+				$status_val='';
+				
+			$str = ucfirst(strtolower($obj->first_name)) . "&nbsp;" . ucfirst(strtolower($obj->last_name));
+			
+				$img_url = 'http://198.1.110.184/~geniuste/gg/'.$obj->photo;
+
+						$img = empty($obj->photo)? base_url('images/cands.jpg') : $img_url;		
+				$list .= "
+				<li  id='emp".$obj->staff_id."' >
+					<a href='javascript:void(0);'  style='padding-top: 0px;padding-bottom: 0px;padding-right: 42px;padding-left: 0px;'  >
+					<label style='border-top-width: 0px;margin-top: 0px;border-bottom-width: 0px;margin-bottom: 0px;border-left-width: 0px;border-right-width: 0px;' data-corners='false'>
+					<fieldset data-role='controlgroup'>                                                        
+						<input type='checkbox' name='checkbox-2b[]' id='checkbox_".$obj->staff_id."' onclick=\"select_staff('".$obj->staff_id."','".$check."')\" value='".$obj->staff_id."'  />                   
+						<label for='checkbox_".$obj->staff_id."' style='border-top-width: 0px;margin-top: 0px;border-bottom-width: 0px;margin-bottom: 0px;border-left-width: 0px;border-right-width: 0px;'>
+							<img src='".$img."' style='float:left;width:80px;height:80px' />
+							<label  style='float:left;padding:2px;'> 
+								<h3>".$str."</h3>
+								<p>".$scheduled_date."</p>
+							</label> 
+							<p class='ui-li-aside'><strong>".$status_val."</strong></p>
+						</label>
+					</fieldset> 
+					</label>
+					</a>
+				</li>
+				";
+		}
+		
+		print $list;
 	
 	
+	unset($obj);
+	}
+	
+}
+
+
+function scroll_cand(){
+	
+	$list ="";
+		if($_POST)
+	{
+		//sanitize post value
+		$group_number = filter_var($_POST["group_no"], FILTER_SANITIZE_NUMBER_INT, FILTER_FLAG_STRIP_HIGH);
+		$countryname = $this->input->post('countryname');
+		$qid = $this->input->post('qid');
+
+	//throw HTTP error if group number is not valid
+	if(!is_numeric($group_number)){
+		header('HTTP/1.1 500 Invalid number!');
+		exit();
+	}
+	$items_per_group_cand = 5;
+	//get current starting point of records
+	$position = ($group_number * $items_per_group_cand);
+	
+	//Limit our results within a specified range. 
+	$getcandlist = "SELECT a.first_name,a.last_name,a.candidate_id,d.assign_status,d.start_date,d.end_date,d.c_status FROM countries as c, `candidate` as a left join assigned_users as d on a.candidate_id = d.user_id and d.qid=".$qid." WHERE c.country='".$countryname."' and a.status='Active' ORDER BY a.first_name ASC LIMIT ".$position.",".$items_per_group_cand;
+	
+	
+	//select * from candidate as a  left join assigned_users as b on a.candidate_id = b.user_id and b.qid= ".$qid." left join countries as d on a.country_code = d.ccode where a.status='Active' and d.country = '".$countryname."' ORDER BY a.first_name ASC LIMIT ".$position.",".$items_per_group_cand;
+	
+	//select a.candidate_id, a.first_name,a.last_name from candidate as a left join countries as d on (a.country_code = d.ccode) where a.status='Active' and d.country = '".$countryname."' ORDER BY a.first_name ASC LIMIT ".$position.",".$items_per_group_cand;
+	
+	$getcandlist = $this->db->query($getcandlist);
+	$result = $getcandlist->result();
+
+	if(!empty($result))  
+		//output results from database
+		
+		foreach($result as $obj)
+		{
+			
+			$start_date = empty($obj->start_date)?'':dateformat($obj->start_date,'d/m/Y H:i a');
+			$end_date = empty($obj->end_date)?'':dateformat($obj->end_date,'d/m/Y H:i a');
+						
+			$scheduled_date = empty($start_date)?"":"Exam scheduled from <strong>".$start_date. "</strong> to <strong>".$end_date."</strong>";
+					
+			$assign_status=$obj->assign_status;
+				
+			if($assign_status == 'Active')
+				$status_val='Exam Scheduled';
+			else
+				$status_val='';
+			
+			$str = ucfirst(strtolower($obj->first_name)) . "&nbsp;" . ucfirst(strtolower($obj->last_name));
+			$img =  base_url('images/cands.jpg');		
+				$list .= "
+						<li  id='cand".$obj->candidate_id."' >
+							<a href='#'  style='padding-top: 0px;padding-bottom: 0px;padding-right: 42px;padding-left: 0px;'  >
+								<label style='border-top-width: 0px;margin-top: 0px;border-bottom-width: 0px;margin-bottom: 0px;border-left-width: 0px;border-right-width: 0px;' data-corners='false'>
+									<fieldset data-role='controlgroup'>                                                        
+										<input type='checkbox' onclick='select_cand(".$obj->candidate_id.")' class='candnames' name='checkbox-2b[]' id='checkbox_".$obj->candidate_id."' value='".$obj->candidate_id."'/>                   
+										<label for='checkbox-2b' style='border-top-width: 0px;margin-top: 0px;border-bottom-width: 0px;margin-bottom: 0px;border-left-width: 0px;border-right-width: 0px;'>
+											<img src='".$img."' style='float:left;width:80px;height:80px'/>
+											<label  style='float:left;padding:10px 0px 0px 10px;'> 
+												<h3>".$str."</h3> 
+												<p>".$scheduled_date."</p>
+											</label> 
+											<p class='ui-li-aside'><strong>".$status_val."</strong></p>
+										</label>
+									</fieldset> 
+								</label>
+							</a><a href='".site_url('exam/editcandidate/'.$obj->candidate_id). "'  data-icon='grid'  data-rel='dialog'>Edit Candidate</a>
+						</li>";								
+		}
+		print $list;
+	unset($obj);
+	}
+	
+}
+
+
 	
 
 	
