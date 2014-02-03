@@ -440,9 +440,16 @@ public function get_assigned_cand($limit,$start){
 	return false;
 }
 
-public function get_table_records($tbl_name,$limit,$start,$p1,$desc){
+public function get_table_records($tbl_name,$limit,$start,$p1,$desc,$select){
 	$this->db->limit($limit,$start);
 	$this->db->order_by($p1,$desc);
+	if(empty($select)){
+		$this->db->select('*');
+	}
+	else{
+		$elements = implode(",",$select);
+		$this->db->select($elements);
+	}
 	$query = $this->db->get($tbl_name);
 	if($query->num_rows() > 0){
 		foreach($query->result() as $row){
